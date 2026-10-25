@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:14.23-trixie
+    container_name: techchallenge-postgres
+    environment:
+      POSTGRES_PASSWORD: "techchallenge"
+      POSTGRES_USER: "root"
+      POSTGRES_DB: "techchallenge"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d techchallenge"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: celsottg/techchallenge:latest
+    container_name: techchallenge-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      POSTGRES_HOST: "postgres"
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "techchallenge"
+      POSTGRES_DB: "techchallenge"
+      PROFESSOR_ACCESS_TOKEN: "professor-dev-token-change-me"
+      ALUNO_ACCESS_TOKEN: "aluno-dev-token-change-me"
+
+volumes:
+  postgres_data:
