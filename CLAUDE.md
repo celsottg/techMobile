@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Visão geral
 
-Aplicativo mobile Expo (SDK 58) / React Native 0.88 / React 19 com Expo Router, escrito em TypeScript (`strict`). É um projeto da FIAP (Tech Challenge) em estágio inicial: `src/app/` contém apenas `_layout.tsx` (um `<Stack />` raiz) e `index.tsx` (tela placeholder). O código do template original foi movido para `example/` (não faz parte do build).
+Aplicativo mobile Expo (SDK 58) / React Native 0.88 / React 19 com Expo Router, escrito em TypeScript (`strict`). É um projeto da FIAP (Tech Challenge) em estágio inicial: a Home (`/`, em `src/app/(app)/index.tsx`) é a listagem de posts do módulo `src/modules/posts`. O código do template original foi movido para `example/` (não faz parte do build).
 
 `AGENTS.md` tem regras obrigatórias para este repositório. Em especial: as APIs do Expo mudam a cada SDK, então consulte `https://docs.expo.dev/versions/v58.0.0/` (ou `https://docs.expo.dev/llms.txt`) antes de usar qualquer API de Expo/EAS/React Native, em vez de confiar na memória.
 
@@ -33,9 +33,9 @@ npx expo-doctor             # diagnóstico de dependências/config
 - **Flags em `app.json`:** `reactCompiler: true` (evite `useMemo`/`useCallback` manuais por padrão) e `web.output: "server"` (renderização web com servidor, não SPA estática).
 - **CNG:** não existem `ios/` nem `android/`; configure comportamento nativo via `app.json` e config plugins, nunca editando pastas nativas à mão.
 
-### Arquitetura modular planejada (ainda não implementada)
+### Arquitetura modular (em implementação)
 
-A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Ao criar telas ou lógica, siga essa estrutura:
+A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já existem `modules/posts` (só listagem) e uma base de `shared/` (config, api, session, theme, ui); `auth` e `admin` ainda não. Ao criar telas ou lógica, siga essa estrutura:
 
 - `src/modules/auth` (login via `POST /login`), `src/modules/posts` (leitura de posts, ALUNO e PROFESSOR) e `src/modules/admin` (criar, editar e remover posts, só PROFESSOR).
 - `src/shared/` para infraestrutura transversal sem regra de negócio: cliente HTTP, sessão (token, role, usuario), UI genérica, tema e config.
@@ -44,7 +44,9 @@ A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Ao 
 
 ## Backend local
 
-`docker-compose.yml` sobe um Postgres 14 (porta 5432) e a API `celsottg/techchallenge:latest` (porta 3000), usando credenciais e tokens de desenvolvimento (`PROFESSOR_ACCESS_TOKEN`, `ALUNO_ACCESS_TOKEN`), o que sugere dois perfis de acesso (professor e aluno). Suba com `docker compose up -d`. O app ainda não consome essa API. Em dispositivo físico ou emulador, `localhost` não aponta para a máquina de desenvolvimento (no emulador Android use `10.0.2.2`).
+`docker-compose.yml` sobe um Postgres 14 (porta 5432) e a API `celsottg/techchallenge:latest` (porta 3000), usando credenciais e tokens de desenvolvimento (`PROFESSOR_ACCESS_TOKEN`, `ALUNO_ACCESS_TOKEN`), o que sugere dois perfis de acesso (professor e aluno). Suba com `docker compose up -d`. Em dispositivo físico ou emulador, `localhost` não aponta para a máquina de desenvolvimento. Por isso `src/shared/config/env.ts` usa `EXPO_PUBLIC_API_URL`, se definida, ou o host do Metro (`Constants.expoConfig.hostUri`) na porta 3000.
+
+Ainda não há login: `src/shared/session` devolve um token de dev fixo (`EXPO_PUBLIC_DEV_ACCESS_TOKEN`, padrão `aluno-dev-token-change-me`). Quando o módulo `auth` existir, `getAccessToken()` passa a devolver o token de `POST /login`.
 
 ## Pasta `docs/`
 
