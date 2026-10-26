@@ -12,6 +12,7 @@ export default function AppLayout() {
         name="index"
         options={{ title: "Posts", headerRight: () => <SignOutButton /> }}
       />
+      <Stack.Screen name="posts/[id]" options={{ title: "Post", headerBackTitle: "Posts" }} />
     </Stack>
   );
 }

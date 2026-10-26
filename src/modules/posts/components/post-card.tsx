@@ -1,21 +1,34 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 
 import { Spacing, useTheme } from "@/shared/theme";
 
 import type { Post } from "../types";
+import { formatDate } from "../utils/format-date";
 
-const dateFormatter = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" });
+type PostCardProps = {
+  post: Post;
+  onPress: () => void;
+};
 
-function formatDate(iso: string) {
-  return dateFormatter.format(new Date(iso));
-}
-
-export function PostCard({ post }: { post: Post }) {
+export function PostCard({ post, onPress }: PostCardProps) {
   const theme = useTheme();
   const wasUpdated = post.data_atualizacao !== post.data_publicacao;
 
   return (
-    <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={post.titulo}
+      accessibilityHint="Abre o post completo"
+      style={({ pressed }) => [
+        styles.card,
+        {
+          backgroundColor: theme.card,
+          // Card pressionado = post selecionado, destacado com a cor primária.
+          borderColor: pressed ? theme.primary : theme.border,
+        },
+      ]}
+    >
       <Text style={[styles.title, { color: theme.text }]} numberOfLines={2}>
         {post.titulo}
       </Text>
@@ -26,7 +39,7 @@ export function PostCard({ post }: { post: Post }) {
       <Text style={[styles.content, { color: theme.text }]} numberOfLines={4}>
         {post.conteudo}
       </Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -34,7 +47,7 @@ const styles = StyleSheet.create({
   card: {
     padding: Spacing.three,
     borderRadius: 12,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     gap: Spacing.two,
   },
   title: {

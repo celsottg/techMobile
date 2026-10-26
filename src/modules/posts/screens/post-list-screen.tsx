@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 
 import { Spacing, useTheme } from "@/shared/theme";
@@ -9,6 +10,7 @@ import { usePosts } from "../hooks/use-posts";
 
 export function PostListScreen() {
   const theme = useTheme();
+  const router = useRouter();
   const {
     posts,
     status,
@@ -36,7 +38,14 @@ export function PostListScreen() {
       <FlatList
         data={posts}
         keyExtractor={(post) => String(post.id)}
-        renderItem={({ item }) => <PostCard post={item} />}
+        renderItem={({ item }) => (
+          <PostCard
+            post={item}
+            onPress={() =>
+              router.push({ pathname: "/posts/[id]", params: { id: String(item.id) } })
+            }
+          />
+        )}
         contentContainerStyle={styles.list}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         keyboardShouldPersistTaps="handled"

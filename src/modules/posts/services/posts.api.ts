@@ -1,6 +1,6 @@
 import { httpGet } from "@/shared/api/http-client";
 
-import type { PaginatedPosts, SearchPostsResponse } from "../types";
+import type { PaginatedPosts, Post, SearchPostsResponse } from "../types";
 
 export function fetchPosts(page: number, limit: number) {
   return httpGet<PaginatedPosts>("/posts", { page, limit });
@@ -8,4 +8,8 @@ export function fetchPosts(page: number, limit: number) {
 
 export function searchPosts(search: string) {
   return httpGet<SearchPostsResponse>("/posts/search", { search });
+}
+
+export function fetchPost(id: number) {
+  return httpGet<Post>(`/posts/${id}`);
 }

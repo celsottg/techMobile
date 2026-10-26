@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Visão geral
 
-Aplicativo mobile Expo (SDK 58) / React Native 0.88 / React 19 com Expo Router, escrito em TypeScript (`strict`). É um projeto da FIAP (Tech Challenge) em estágio inicial: a Home (`/`, em `src/app/(app)/index.tsx`) é a listagem de posts do módulo `src/modules/posts`. O código do template original foi movido para `example/` (não faz parte do build).
+Aplicativo mobile Expo (SDK 58) / React Native 0.88 / React 19 com Expo Router, escrito em TypeScript (`strict`). É um projeto da FIAP (Tech Challenge) em estágio inicial: a Home (`/`, em `src/app/(app)/index.tsx`) é a listagem de posts do módulo `src/modules/posts`, e cada card abre a leitura do post em `/posts/[id]` (`src/app/(app)/posts/[id].tsx`). O código do template original foi movido para `example/` (não faz parte do build).
 
 `AGENTS.md` tem regras obrigatórias para este repositório. Em especial: as APIs do Expo mudam a cada SDK, então consulte `https://docs.expo.dev/versions/v58.0.0/` (ou `https://docs.expo.dev/llms.txt`) antes de usar qualquer API de Expo/EAS/React Native, em vez de confiar na memória.
 
@@ -35,7 +35,7 @@ npx expo-doctor             # diagnóstico de dependências/config
 
 ### Arquitetura modular (em implementação)
 
-A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já existem `modules/auth` (login), `modules/posts` (só listagem) e uma base de `shared/` (config, api, session, theme, ui); `admin` ainda não. Ao criar telas ou lógica, siga essa estrutura:
+A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já existem `modules/auth` (login), `modules/posts` (listagem e detalhe) e uma base de `shared/` (config, api, session, theme, ui); `admin` ainda não. Ao criar telas ou lógica, siga essa estrutura:
 
 - `src/modules/auth` (login via `POST /login`), `src/modules/posts` (leitura de posts, ALUNO e PROFESSOR) e `src/modules/admin` (criar, editar e remover posts, só PROFESSOR).
 - `src/shared/` para infraestrutura transversal sem regra de negócio: cliente HTTP, sessão (token, role, usuario), UI genérica, tema e config.
@@ -48,15 +48,17 @@ A paleta do app é fixa e vive em `src/shared/theme/index.ts`. Toda tela nova ou
 
 | Uso | Token | Cor |
 | --- | --- | --- |
-| Botões, links, posts/itens selecionados | `primary` | `#2563EB` |
-| Fundo das telas | `background` | `#F8FAFC` |
-| Cards de posts (e campos, cabeçalhos) | `card` | `#FFFFFF` |
-| Texto principal | `text` | `#0F172A` |
-| Texto secundário (metadados, placeholders) | `textSecondary` | `#475569` |
+| Fundo da tela | `background` | `#F4F7F5` |
+| Cartões e campo de busca (também campos de formulário e cabeçalhos) | `card` | `#FFFFFF` |
+| Títulos e texto principal | `text` | `#24332F` |
+| Texto secundário (metadados, placeholders) | `textSecondary` | `#687671` |
+| Bordas | `border` | `#E1E9E4` |
+| Botões, links e destaques (ex.: post selecionado/pressionado) | `primary` | `#34786B` |
+| Destaque discreto, como etiquetas | `primarySoft` | `#E8F2EE` |
 
 Regras:
-- Use sempre os tokens via `useTheme()`; **nunca** escreva hex direto em componentes ou telas. Se faltar uma cor, adicione um token no tema (como já existem `onPrimary`, `border` e `danger`) em vez de criar um valor local.
-- Não altere os cinco valores acima sem pedido explícito do usuário.
+- Use sempre os tokens via `useTheme()`; **nunca** escreva hex direto em componentes ou telas. Se faltar uma cor, adicione um token no tema (como já existem `onPrimary` e `danger`) em vez de criar um valor local.
+- Não altere os valores da tabela acima sem pedido explícito do usuário.
 - O app é só modo claro (`userInterfaceStyle: "light"` em `app.json`); não reintroduza dark mode sem pedido.
 - Cabeçalhos e fundo do Expo Router usam a mesma paleta via `NavigationTheme` no `ThemeProvider` de `src/app/_layout.tsx`.
 

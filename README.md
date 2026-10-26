@@ -11,7 +11,7 @@ Aplicativo mobile do blog educacional do **Tech Challenge (Pós Tech FIAP)**, de
 | Logout e encerramento automático da sessão em 401 | ✅ |
 | Listagem paginada de posts (rolagem infinita e pull-to-refresh) | ✅ |
 | Busca de posts por palavra-chave (com debounce) | ✅ |
-| Detalhe do post | 🔜 |
+| Leitura do post completo ao tocar no card (`GET /posts/:id`), com tratamento de post não encontrado | ✅ |
 | Criação, edição e exclusão de posts (só professor) | 🔜 |
 
 ## Stack
@@ -30,7 +30,7 @@ Aplicativo mobile do blog educacional do **Tech Challenge (Pós Tech FIAP)**, de
 | [ESLint](https://eslint.org/) + `eslint-config-expo` | 9 | Padronização de código |
 
 **Decisões:**
-- **Sem bibliotecas extras de HTTP, estado ou estilo:** requisições usam `fetch`, estado usa hooks do React com Context API, e estilos usam `StyleSheet` com um tema próprio (claro e escuro).
+- **Sem bibliotecas extras de HTTP, estado ou estilo:** requisições usam `fetch`, estado usa hooks do React com Context API, e estilos usam `StyleSheet` com um tema próprio (só modo claro, paleta abaixo).
 - **Sem testes automatizados por enquanto:** o projeto ainda não tem framework de testes configurado.
 
 ## Arquitetura
@@ -40,12 +40,14 @@ O app segue uma **arquitetura modular dentro de `src/`**: cada domínio do backe
 ```
 src/
 ├── app/                          # Rotas do Expo Router (só arquivos finos que reexportam telas)
-│   ├── _layout.tsx               # SessionProvider, splash e Stack.Protected (login x área logada)
+│   ├── _layout.tsx               # ThemeProvider, SessionProvider, splash e Stack.Protected (login x área logada)
 │   ├── (auth)/
 │   │   └── login.tsx             # → modules/auth
 │   └── (app)/                    # Área autenticada
-│       ├── _layout.tsx           # Header com botão "Sair"
-│       └── index.tsx             # Home "/" → modules/posts
+│       ├── _layout.tsx           # Stack com header "Posts" (botão "Sair") e "Post"
+│       ├── index.tsx             # Home "/" → modules/posts (lista)
+│       └── posts/
+│           └── [id].tsx          # "/posts/:id" → modules/posts (detalhe)
 │
 ├── modules/
 │   ├── auth/                     # Login (POST /login)
@@ -55,11 +57,14 @@ src/
 │   │   ├── types.ts
 │   │   └── index.ts              # API pública do módulo
 │   │
-│   └── posts/                    # Leitura de posts (GET /posts, GET /posts/search)
-│       ├── components/           # PostCard, SearchBar
-│       ├── hooks/use-posts.ts    # Paginação, busca com debounce, refresh
-│       ├── screens/              # PostListScreen
+│   └── posts/                    # Leitura de posts (GET /posts, GET /posts/search, GET /posts/:id)
+│       ├── components/           # PostCard (clicável), SearchBar
+│       ├── hooks/
+│       │   ├── use-posts.ts      # Paginação, busca com debounce, refresh
+│       │   └── use-post.ts       # Detalhe por id (carregando, erro, não encontrado)
+│       ├── screens/              # PostListScreen, PostDetailScreen
 │       ├── services/posts.api.ts
+│       ├── utils/format-date.ts  # Datas no formato pt-BR
 │       ├── types.ts
 │       └── index.ts
 │
@@ -67,7 +72,7 @@ src/
     ├── api/http-client.ts        # fetch + Bearer token + ApiError (400/401/403/404)
     ├── config/env.ts             # URL da API
     ├── session/                  # SessionProvider, useSession, persistência da sessão
-    ├── theme/                    # Cores (claro/escuro), espaçamentos, useTheme
+    ├── theme/                    # Paleta, tema do React Navigation, espaçamentos, useTheme
     └── ui/                       # Button, TextField, Loading, ErrorState, EmptyState
 ```
 
@@ -94,7 +99,7 @@ LoginScreen ──► POST /login { email, senha }
                    └── 200 → { token, role, usuario }
                                │
                                ▼
-                 SessionProvider: salva no secure-store e repassa o token ao http-client
+                 SessionProvider: salva (secure-store no nativo, localStorage na web) e repassa o token ao http-client
                                │
                                ▼
                  Stack.Protected libera (app) → Home (listagem de posts)
@@ -103,6 +108,34 @@ LoginScreen ──► POST /login { email, senha }
 ```
 
 O token devolvido pelo backend é **fixo por papel** (não é JWT): todos os logins do mesmo papel recebem o mesmo token. O `role` salvo na sessão é o que vai controlar o acesso à futura área do professor.
+
+### Navegação de leitura
+
+```
+Home "/" (PostListScreen) ── toque no card ──► "/posts/:id" (PostDetailScreen)
+                                                   ├── carregando → spinner
+                                                   ├── erro → mensagem + "Tentar novamente"
+                                                   ├── 404 ou id inválido → "Post não encontrado" + voltar
+                                                   └── 200 → título, datas e conteúdo completo (só leitura)
+```
+
+O detalhe sempre busca o post pelo id (em vez de reaproveitar o item da lista), então também funciona aberto por link direto.
+
+## Identidade visual
+
+O app usa uma paleta fixa, só em modo claro (`userInterfaceStyle: "light"`). As cores ficam em `src/shared/theme/index.ts` e as telas as consomem por `useTheme()`, nunca com hex direto. O cabeçalho e o fundo da navegação usam a mesma paleta via `ThemeProvider`.
+
+| Uso | Token | Cor |
+| --- | --- | --- |
+| Fundo da tela | `background` | `#F4F7F5` |
+| Cartões e campo de busca | `card` | `#FFFFFF` |
+| Títulos e texto principal | `text` | `#24332F` |
+| Texto secundário | `textSecondary` | `#687671` |
+| Bordas | `border` | `#E1E9E4` |
+| Botões, links e destaques | `primary` | `#34786B` |
+| Destaque discreto, como etiquetas | `primarySoft` | `#E8F2EE` |
+
+Tokens de apoio: `onPrimary` (`#FFFFFF`, texto sobre botões) e `danger` (`#DC2626`, erros).
 
 ## Como executar
 
@@ -149,3 +182,5 @@ Abra no Expo Go (QR code), em um emulador (`a` para Android, `i` para iOS) ou no
 | `npx tsc --noEmit` | Verificação de tipos |
 | `npx expo install <pacote>` | Instala dependências na versão compatível com o SDK (use no lugar de `npm install <pacote>`) |
 | `npx expo-doctor` | Diagnóstico de dependências e configuração |
+
+`npm run reset-project` vem do template e está quebrado: o script foi movido para `example/scripts`, junto com o código original do template (a pasta `example/` não faz parte do build).

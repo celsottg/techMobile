@@ -3,13 +3,14 @@ import { DefaultTheme } from "expo-router";
 // Paleta oficial do app (ver "Cores" no CLAUDE.md). Não use hex soltos nas telas:
 // consuma sempre estes tokens via useTheme().
 export const Colors = {
-  primary: "#2563EB", // botões, links e itens/posts selecionados
+  primary: "#34786B", // botões, links e destaques (ex.: post selecionado)
   onPrimary: "#FFFFFF", // texto e ícones sobre fundo primary
-  background: "#F8FAFC", // fundo das telas
-  card: "#FFFFFF", // cards de posts, campos e cabeçalhos
-  text: "#0F172A", // texto principal
-  textSecondary: "#475569", // texto secundário, placeholders e metadados
-  border: "#E2E8F0",
+  primarySoft: "#E8F2EE", // destaque discreto, como etiquetas
+  background: "#F4F7F5", // fundo das telas
+  card: "#FFFFFF", // cartões, campo de busca e cabeçalhos
+  text: "#24332F", // títulos e texto principal
+  textSecondary: "#687671", // texto secundário, placeholders e metadados
+  border: "#E1E9E4", // bordas
   danger: "#DC2626",
 } as const;
 
