@@ -35,7 +35,7 @@ npx expo-doctor             # diagnóstico de dependências/config
 
 ### Arquitetura modular (em implementação)
 
-A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já existem `modules/posts` (só listagem) e uma base de `shared/` (config, api, session, theme, ui); `auth` e `admin` ainda não. Ao criar telas ou lógica, siga essa estrutura:
+A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já existem `modules/auth` (login), `modules/posts` (só listagem) e uma base de `shared/` (config, api, session, theme, ui); `admin` ainda não. Ao criar telas ou lógica, siga essa estrutura:
 
 - `src/modules/auth` (login via `POST /login`), `src/modules/posts` (leitura de posts, ALUNO e PROFESSOR) e `src/modules/admin` (criar, editar e remover posts, só PROFESSOR).
 - `src/shared/` para infraestrutura transversal sem regra de negócio: cliente HTTP, sessão (token, role, usuario), UI genérica, tema e config.
@@ -46,7 +46,13 @@ A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já
 
 `docker-compose.yml` sobe um Postgres 14 (porta 5432) e a API `celsottg/techchallenge:latest` (porta 3000), usando credenciais e tokens de desenvolvimento (`PROFESSOR_ACCESS_TOKEN`, `ALUNO_ACCESS_TOKEN`), o que sugere dois perfis de acesso (professor e aluno). Suba com `docker compose up -d`. Em dispositivo físico ou emulador, `localhost` não aponta para a máquina de desenvolvimento. Por isso `src/shared/config/env.ts` usa `EXPO_PUBLIC_API_URL`, se definida, ou o host do Metro (`Constants.expoConfig.hostUri`) na porta 3000.
 
-Ainda não há login: `src/shared/session` devolve um token de dev fixo (`EXPO_PUBLIC_DEV_ACCESS_TOKEN`, padrão `aluno-dev-token-change-me`). Quando o módulo `auth` existir, `getAccessToken()` passa a devolver o token de `POST /login`.
+**Autenticação:**
+- `POST /login` devolve `{ token, role, usuario }`. O `SessionProvider` (`src/shared/session`) guarda esse objeto: com `expo-secure-store` no nativo e `localStorage` na web.
+- A sessão repassa o token ao cliente HTTP com `setAccessToken`, então `shared/api` não importa `shared/session`.
+- Um 401 em rota autenticada encerra a sessão.
+- `src/app/_layout.tsx` usa `Stack.Protected`: sem sessão, só `(auth)/login` fica acessível; com sessão, só `(app)`.
+- O token é fixo por papel (não é JWT). O `role` da sessão é o que vai decidir o acesso à futura área do professor.
+- Usuários de teste: `carlos.mendes@professor.fiap.br` / `senha-professor-123` e `ana.beatriz@aluno.fiap.br` / `senha-aluno-456`.
 
 ## Pasta `docs/`
 

@@ -1,6 +1,8 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 import { Spacing, useTheme } from "@/shared/theme";
+
+import { Button } from "./button";
 
 export function Loading({ message = "Carregando..." }: { message?: string }) {
   const theme = useTheme();
@@ -26,15 +28,9 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
       <Text style={[styles.title, { color: theme.danger }]}>Algo deu errado</Text>
       <Text style={[styles.message, { color: theme.textSecondary }]}>{message}</Text>
       {onRetry && (
-        <Pressable
-          onPress={onRetry}
-          style={({ pressed }) => [
-            styles.button,
-            { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
-          ]}
-        >
-          <Text style={styles.buttonText}>Tentar novamente</Text>
-        </Pressable>
+        <View style={styles.action}>
+          <Button title="Tentar novamente" onPress={onRetry} />
+        </View>
       )}
     </View>
   );
@@ -75,14 +71,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: "center",
   },
-  button: {
+  action: {
     marginTop: Spacing.two,
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two + 2,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontWeight: "600",
   },
 });

@@ -14,7 +14,3 @@ function resolveApiUrl() {
 }
 
 export const API_URL = resolveApiUrl();
-
-// Temporário: até o módulo de login existir, as chamadas usam o token de dev do perfil ALUNO.
-export const DEV_ACCESS_TOKEN =
-  process.env.EXPO_PUBLIC_DEV_ACCESS_TOKEN ?? "aluno-dev-token-change-me";
