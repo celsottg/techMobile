@@ -1,15 +1,18 @@
-import { SplashScreen, Stack } from "expo-router";
+import { SplashScreen, Stack, ThemeProvider } from "expo-router";
 
 import { SessionProvider, useSession } from "@/shared/session";
+import { NavigationTheme } from "@/shared/theme";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   return (
-    <SessionProvider>
-      <SplashScreenController />
-      <RootNavigator />
-    </SessionProvider>
+    <ThemeProvider value={NavigationTheme}>
+      <SessionProvider>
+        <SplashScreenController />
+        <RootNavigator />
+      </SessionProvider>
+    </ThemeProvider>
   );
 }
 

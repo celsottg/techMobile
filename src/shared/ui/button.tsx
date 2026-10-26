@@ -20,7 +20,7 @@ export function Button({
   const theme = useTheme();
   const isPrimary = variant === "primary";
   const isDisabled = disabled || loading;
-  const textColor = isPrimary ? "#FFFFFF" : theme.primary;
+  const textColor = isPrimary ? theme.onPrimary : theme.primary;
 
   return (
     <Pressable

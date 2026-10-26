@@ -42,6 +42,24 @@ A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já
 - `src/app/` contém só rotas finas que reexportam telas dos módulos.
 - Dependências: `app → modules → shared`; `admin → posts`; `shared` nunca importa `modules`. Um módulo só importa outro pelo `index.ts` dele.
 
+## Cores (obrigatório)
+
+A paleta do app é fixa e vive em `src/shared/theme/index.ts`. Toda tela nova ou alterada deve segui-la:
+
+| Uso | Token | Cor |
+| --- | --- | --- |
+| Botões, links, posts/itens selecionados | `primary` | `#2563EB` |
+| Fundo das telas | `background` | `#F8FAFC` |
+| Cards de posts (e campos, cabeçalhos) | `card` | `#FFFFFF` |
+| Texto principal | `text` | `#0F172A` |
+| Texto secundário (metadados, placeholders) | `textSecondary` | `#475569` |
+
+Regras:
+- Use sempre os tokens via `useTheme()`; **nunca** escreva hex direto em componentes ou telas. Se faltar uma cor, adicione um token no tema (como já existem `onPrimary`, `border` e `danger`) em vez de criar um valor local.
+- Não altere os cinco valores acima sem pedido explícito do usuário.
+- O app é só modo claro (`userInterfaceStyle: "light"` em `app.json`); não reintroduza dark mode sem pedido.
+- Cabeçalhos e fundo do Expo Router usam a mesma paleta via `NavigationTheme` no `ThemeProvider` de `src/app/_layout.tsx`.
+
 ## Backend local
 
 `docker-compose.yml` sobe um Postgres 14 (porta 5432) e a API `celsottg/techchallenge:latest` (porta 3000), usando credenciais e tokens de desenvolvimento (`PROFESSOR_ACCESS_TOKEN`, `ALUNO_ACCESS_TOKEN`), o que sugere dois perfis de acesso (professor e aluno). Suba com `docker compose up -d`. Em dispositivo físico ou emulador, `localhost` não aponta para a máquina de desenvolvimento. Por isso `src/shared/config/env.ts` usa `EXPO_PUBLIC_API_URL`, se definida, ou o host do Metro (`Constants.expoConfig.hostUri`) na porta 3000.
