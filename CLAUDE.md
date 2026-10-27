@@ -16,13 +16,15 @@ O projeto usa npm (`package-lock.json`), então use `npx` (não `bunx`).
 npm install
 npx expo start              # dev server (também: npm run android | ios | web)
 npx expo lint               # lint (npm run lint)
+npm test                    # testes unitários (Jest); npm run test:coverage inclui cobertura
 npx tsc --noEmit            # typecheck
 npx expo install <pacote>   # SEMPRE use no lugar de npm add, para resolver versões compatíveis com o SDK
 npx expo-doctor             # diagnóstico de dependências/config
 ```
 
-- Não há framework de testes configurado (nenhum Jest nem script `test`).
-- Rode lint e typecheck antes de dar uma tarefa como concluída.
+- Rode lint, testes e typecheck antes de dar uma tarefa como concluída. O `tsc` ainda acusa erros antigos em `example/` (fora do build); só os de `src/` importam.
+- **Testes:** Jest com `jest-expo` e React Native Testing Library 14 (`render`, `renderHook`, `fireEvent` e `act` são assíncronos: use `await`). Config em `jest.config.js`. Escreva `*.test.ts(x)` ao lado do código, mockando a API (`@/shared/api/http-client` ou os `*.api.ts`) e o router (`jest.mock("expo-router", () => jest.requireActual("@/test/expo-router-mock").expoRouterMock)`). Dados de apoio em `src/test/fixtures.ts`. Todo código novo em `src/modules` e `src/shared` deve vir com testes: o CI falha se a cobertura cair abaixo do `coverageThreshold`.
+- **CI:** `.github/workflows/ci.yml` roda lint e testes com cobertura em PRs para a `master` e no push na `master`.
 - Bibliotecas com código nativo exigem development build (`npx expo run:android|ios` ou `eas build --profile development`); Expo Go só inclui os módulos nativos embutidos.
 - `npm run reset-project` referencia `scripts/reset-project.js`, que **não existe** mais na raiz (foi movido para `example/scripts`).
 

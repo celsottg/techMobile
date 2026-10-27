@@ -1,0 +1,77 @@
+name: CI
+
+# Roda em todo PR para a master e também depois do merge (push na master).
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# Uma execução nova no mesmo PR/branch cancela a anterior que ainda está rodando.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+  test:
+    name: Testes e cobertura
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      # Falha se algum teste quebrar ou se a cobertura ficar abaixo do coverageThreshold (jest.config.js).
+      - name: Testes com cobertura
+        run: npm run test:coverage -- --ci
+
+      - name: Resumo da cobertura
+        if: always()
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then
+            {
+              echo "### Cobertura de testes"
+              echo
+              echo "| Métrica | Cobertura |"
+              echo "| --- | --- |"
+              jq -r '.total | "| Statements | \(.statements.pct)% |", "| Branches | \(.branches.pct)% |", "| Functions | \(.functions.pct)% |", "| Lines | \(.lines.pct)% |"' coverage/coverage-summary.json
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Publicar relatório de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          if-no-files-found: ignore
+          retention-days: 14

@@ -32,10 +32,12 @@ Aplicativo mobile do blog educacional do **Tech Challenge (Pós Tech FIAP)**, de
 | [expo-splash-screen](https://docs.expo.dev/versions/v58.0.0/sdk/splash-screen/) | 58 | Mantém o splash enquanto a sessão salva é lida |
 | [react-native-safe-area-context](https://github.com/AppAndFlow/react-native-safe-area-context) | 5.10 | Respeita notch e barras do sistema |
 | [ESLint](https://eslint.org/) + `eslint-config-expo` | 9 | Padronização de código |
+| [Jest](https://jestjs.io/) + [`jest-expo`](https://docs.expo.dev/develop/unit-testing/) | 30 / 58 | Testes unitários e cobertura |
+| [React Native Testing Library](https://callstack.github.io/react-native-testing-library/) | 14 | Renderização de componentes e hooks nos testes |
 
 **Decisões:**
 - **Sem bibliotecas extras de HTTP, estado ou estilo:** requisições usam `fetch`, estado usa hooks do React com Context API, e estilos usam `StyleSheet` com um tema próprio (só modo claro, paleta abaixo).
-- **Sem testes automatizados por enquanto:** o projeto ainda não tem framework de testes configurado.
+- **Testes unitários com Jest:** serviços, hooks, componentes e telas têm testes ao lado do código (`*.test.ts(x)`), com a API e o `expo-router` simulados. O CI exige cobertura mínima (veja "Testes e CI").
 
 ## Arquitetura
 
@@ -163,6 +165,29 @@ O detalhe sempre busca o post pelo id (em vez de reaproveitar o item da lista), 
 - **Novos cadastros:** cada cadastro novo (ex.: professores e alunos) entra como uma seção do hub, em `src/app/(app)/admin/<secao>/`.
 - **Listas atualizadas:** `createPost`, `updatePost` e `deletePost` disparam `notifyPostsChanged()` (`posts-changes.ts`), e toda lista (`usePosts`) e todo detalhe (`usePost`) montados recarregam, sem refetch a cada troca de aba.
 
+## Testes e CI
+
+Os testes ficam ao lado do código que testam (`format-date.ts` → `format-date.test.ts`). Dublês e dados de apoio ficam em `src/test/` (`fixtures.ts` e `expo-router-mock.ts`). A cobertura considera `src/modules` e `src/shared`; `src/app` (só reexporta telas), barrels `index.ts` e arquivos `types.ts` ficam de fora.
+
+```bash
+npm test                 # roda os testes
+npm run test:watch       # modo watch
+npm run test:coverage    # testes + cobertura (relatório HTML em coverage/lcov-report/index.html)
+```
+
+A cobertura mínima está em `coverageThreshold` no `jest.config.js` (hoje 90% de statements, linhas e funções, e 80% de branches). Se cair abaixo disso, o comando falha.
+
+### GitHub Actions
+
+O workflow `.github/workflows/ci.yml` roda em todo pull request para a `master` e também no push na `master` (ou seja, depois do merge). Ele tem dois jobs em paralelo:
+
+| Job | O que faz |
+| --- | --- |
+| **Lint** | `npm ci` + `npm run lint` |
+| **Testes e cobertura** | `npm ci` + `npm run test:coverage`, falha se algum teste quebrar ou a cobertura ficar abaixo do mínimo; mostra a tabela de cobertura no resumo da execução e publica o relatório como artefato `coverage` |
+
+Para que o merge só seja liberado com o CI verde, ative uma regra de proteção da branch `master` em **Settings → Branches** exigindo os checks **Lint** e **Testes e cobertura**.
+
 ## Identidade visual
 
 O app usa uma paleta fixa, só em modo claro (`userInterfaceStyle: "light"`). As cores ficam em `src/shared/theme/index.ts` e as telas as consomem por `useTheme()`, nunca com hex direto. O cabeçalho e o fundo da navegação usam a mesma paleta via `ThemeProvider`.
@@ -221,6 +246,7 @@ Abra no Expo Go (QR code), em um emulador (`a` para Android, `i` para iOS) ou no
 | --- | --- |
 | `npx expo start` | Inicia o servidor de desenvolvimento (também `npm run android`, `ios` ou `web`) |
 | `npx expo lint` | Lint com ESLint (`npm run lint`) |
+| `npm test` | Testes unitários (também `npm run test:watch` e `npm run test:coverage`) |
 | `npx tsc --noEmit` | Verificação de tipos |
 | `npx expo install <pacote>` | Instala dependências na versão compatível com o SDK (use no lugar de `npm install <pacote>`) |
 | `npx expo-doctor` | Diagnóstico de dependências e configuração |
