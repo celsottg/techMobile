@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Visão geral
 
-Aplicativo mobile Expo (SDK 58) / React Native 0.88 / React 19 com Expo Router, escrito em TypeScript (`strict`). É um projeto da FIAP (Tech Challenge) em estágio inicial: a área logada tem duas abas. A aba **Posts** tem a Home (`/`, em `src/app/(app)/(posts)/index.tsx`) com a listagem de `src/modules/posts`, e cada card abre a leitura do post em `/posts/[id]`. A aba **Admin** (`/admin`, só PROFESSOR) é o hub de cadastros do professor, do módulo `src/modules/admin`; por enquanto tem só a seção Posts, com a criação de post em `/admin/posts/create`. O código do template original foi movido para `example/` (não faz parte do build).
+Aplicativo mobile Expo (SDK 58) / React Native 0.88 / React 19 com Expo Router, escrito em TypeScript (`strict`). É um projeto da FIAP (Tech Challenge) em estágio inicial: a área logada tem duas abas. A aba **Posts** tem a Home (`/`, em `src/app/(app)/(posts)/index.tsx`) com a listagem de `src/modules/posts`, e cada card abre a leitura do post em `/posts/[id]`. A aba **Admin** (`/admin`, só PROFESSOR) é o hub de cadastros do professor, do módulo `src/modules/admin`; por enquanto tem só a seção Posts, com a gestão de posts em `/admin/posts` (lápis abre `/admin/posts/[id]/edit`, lixeira exclui com confirmação) e a criação em `/admin/posts/create`. O código do template original foi movido para `example/` (não faz parte do build).
 
 `AGENTS.md` tem regras obrigatórias para este repositório. Em especial: as APIs do Expo mudam a cada SDK, então consulte `https://docs.expo.dev/versions/v58.0.0/` (ou `https://docs.expo.dev/llms.txt`) antes de usar qualquer API de Expo/EAS/React Native, em vez de confiar na memória.
 
@@ -35,7 +35,7 @@ npx expo-doctor             # diagnóstico de dependências/config
 
 ### Arquitetura modular (em implementação)
 
-A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já existem `modules/auth` (login e `SignOutButton`), `modules/posts` (listagem, detalhe e `createPost`), `modules/admin` (hub e criação de posts) e uma base de `shared/` (config, api, session, theme, ui). Edição e remoção de posts ainda não existem. Ao criar telas ou lógica, siga essa estrutura:
+A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já existem `modules/auth` (login e `SignOutButton`), `modules/posts` (listagem, detalhe e `createPost`/`updatePost`/`deletePost`), `modules/admin` (hub, criação, edição e exclusão de posts) e uma base de `shared/` (config, api, session, theme, ui). Ao criar telas ou lógica, siga essa estrutura:
 
 - `src/modules/auth` (login via `POST /login`), `src/modules/posts` (leitura de posts, ALUNO e PROFESSOR) e `src/modules/admin` (criar, editar e remover posts, só PROFESSOR).
 - `src/shared/` para infraestrutura transversal sem regra de negócio: cliente HTTP, sessão (token, role, usuario), UI genérica, tema e config.
@@ -43,7 +43,8 @@ A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já
 - Dependências: `app → modules → shared`; `admin → posts`; `shared` nunca importa `modules`. Um módulo só importa outro pelo `index.ts` dele.
 - **Navegação:** `src/app/(app)/_layout.tsx` usa `Tabs` com um Stack por aba (`(posts)/_layout.tsx` e `admin/_layout.tsx`). A aba Admin fica dentro de `Tabs.Protected guard={role === "PROFESSOR"}`, o que também bloqueia deep link.
 - **Área do professor:** a aba Admin é genérica. Cada novo cadastro ou edição do professor (ex.: professores e alunos) entra como uma seção nova: um item em `SECTIONS` de `admin-home-screen.tsx` e rotas em `src/app/(app)/admin/<secao>/`, registradas no Stack de `admin/_layout.tsx`.
-- **Invalidação de listas:** escritas em posts chamam `notifyPostsChanged()` (`modules/posts/services/posts-changes.ts`), e o `usePosts` recarrega quando a versão muda. Use o mesmo sinal em edição e remoção.
+- **Confirmações:** ações destrutivas usam `confirmDestructive` (`shared/ui/dialogs.ts`), que cai em `window.confirm` na web porque `Alert.alert` não funciona lá.
+- **Invalidação de listas:** escritas em posts chamam `notifyPostsChanged()` (`modules/posts/services/posts-changes.ts`), e o `usePosts` recarrega quando a versão muda. Vale para criar, editar e remover; `usePosts` e `usePost` recarregam.
 
 ## Cores (obrigatório)
 

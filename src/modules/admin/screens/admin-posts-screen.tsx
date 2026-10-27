@@ -1,17 +1,21 @@
 import { useRouter } from "expo-router";
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 
 import { usePosts } from "@/modules/posts";
 import { Spacing, useTheme } from "@/shared/theme";
 import { Button } from "@/shared/ui/button";
 import { EmptyState, ErrorState, Loading } from "@/shared/ui/state-views";
 
-// Gestão de posts do professor. Por enquanto só lista os títulos; editar e remover vêm depois.
+import { AdminPostRow } from "../components/admin-post-row";
+import { useDeletePost } from "../hooks/use-delete-post";
+
+// Gestão de posts do professor: lista os títulos, com criar, editar (lápis) e excluir (lixeira).
 export function AdminPostsScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { posts, status, error, isRefreshing, isLoadingMore, retry, refresh, loadMore } =
     usePosts();
+  const { deletingId, remove } = useDeletePost();
 
   function renderBody() {
     if (status === "loading") {
@@ -27,11 +31,14 @@ export function AdminPostsScreen() {
         data={posts}
         keyExtractor={(post) => String(post.id)}
         renderItem={({ item }) => (
-          <View style={[styles.row, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <Text style={[styles.title, { color: theme.text }]} numberOfLines={2}>
-              {item.titulo}
-            </Text>
-          </View>
+          <AdminPostRow
+            post={item}
+            isDeleting={deletingId === item.id}
+            onEdit={() =>
+              router.push({ pathname: "/admin/posts/[id]/edit", params: { id: String(item.id) } })
+            }
+            onDelete={() => remove(item)}
+          />
         )}
         contentContainerStyle={styles.list}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -74,15 +81,6 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: Spacing.two,
-  },
-  row: {
-    padding: Spacing.three,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "600",
   },
   footer: {
     paddingVertical: Spacing.three,

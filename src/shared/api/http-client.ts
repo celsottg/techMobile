@@ -83,6 +83,14 @@ export function httpPost<T>(path: string, body: unknown, options?: Omit<RequestO
   return request<T>("POST", path, { ...options, body });
 }
 
+export function httpPut<T>(path: string, body: unknown) {
+  return request<T>("PUT", path, { body });
+}
+
+export function httpDelete(path: string) {
+  return request<void>("DELETE", path);
+}
+
 function messageForStatus(status: number) {
   switch (status) {
     case 400:

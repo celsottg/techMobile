@@ -14,7 +14,8 @@ Aplicativo mobile do blog educacional do **Tech Challenge (Pós Tech FIAP)**, de
 | Leitura do post completo ao tocar no card (`GET /posts/:id`), com tratamento de post não encontrado | ✅ |
 | Aba **Admin** só para professor, com hub de cadastros (`Tabs.Protected`) | ✅ |
 | Criação de posts (só professor, `POST /posts`) | ✅ |
-| Edição e exclusão de posts (só professor) | 🔜 |
+| Edição de posts pelo lápis na aba Admin, com os campos já preenchidos (só professor, `PUT /posts/:id`) | ✅ |
+| Exclusão de posts pela lixeira, com confirmação (só professor, `DELETE /posts/:id`) | ✅ |
 
 ## Stack
 
@@ -54,17 +55,18 @@ src/
 │       │   └── posts/
 │       │       └── [id].tsx      # "/posts/:id" → modules/posts (detalhe)
 │       └── admin/                # Aba Admin (área do professor)
-│           ├── _layout.tsx       # Stack com header "Admin" (botão "Sair"), "Posts" e "Novo post"
+│           ├── _layout.tsx       # Stack com header "Admin" (botão "Sair"), "Posts", "Novo post" e "Editar post"
 │           ├── index.tsx         # "/admin" → modules/admin (hub de cadastros)
 │           └── posts/
 │               ├── index.tsx     # "/admin/posts" → modules/admin (gestão de posts)
-│               └── create.tsx    # "/admin/posts/create" → modules/admin (novo post)
+│               ├── create.tsx    # "/admin/posts/create" → modules/admin (novo post)
+│               └── [id]/edit.tsx # "/admin/posts/:id/edit" → modules/admin (editar post)
 │
 ├── modules/
 │   ├── admin/                    # Área do professor (consome modules/posts)
-│   │   ├── components/post-form.tsx  # Campos título/conteúdo (criação e, depois, edição)
-│   │   ├── hooks/use-create-post.ts  # Validação, envio e tratamento de 400/403
-│   │   ├── screens/              # AdminHomeScreen (hub), AdminPostsScreen, PostCreateScreen
+│   │   ├── components/           # PostForm (título/conteúdo, criação e edição), AdminPostRow (lápis e lixeira)
+│   │   ├── hooks/                # use-create-post, use-edit-post (carrega e salva), use-delete-post (confirma e exclui)
+│   │   ├── screens/              # AdminHomeScreen (hub), AdminPostsScreen, PostCreateScreen, PostEditScreen
 │   │   └── index.ts
 │   │
 │   ├── auth/                     # Login (POST /login)
@@ -82,7 +84,7 @@ src/
 │       │   └── use-post.ts       # Detalhe por id (carregando, erro, não encontrado)
 │       ├── screens/              # PostListScreen, PostDetailScreen
 │       ├── services/
-│       │   ├── posts.api.ts      # GET /posts, /posts/search, /posts/:id e POST /posts
+│       │   ├── posts.api.ts      # GET /posts, /posts/search, /posts/:id, POST, PUT e DELETE
 │       │   └── posts-changes.ts  # Sinal de "posts mudaram" que recarrega as listas
 │       ├── utils/format-date.ts  # Datas no formato pt-BR
 │       ├── types.ts
@@ -146,6 +148,9 @@ O detalhe sempre busca o post pelo id (em vez de reaproveitar o item da lista), 
 ```
 "/admin" (AdminHomeScreen, hub de cadastros)
    └── Posts ──► "/admin/posts" (AdminPostsScreen: títulos + "Novo post")
+                    ├── lápis ──► "/admin/posts/:id/edit" (PostEditScreen: GET /posts/:id preenche os campos)
+                    │                ── PUT /posts/:id { titulo, conteudo } → volta para a lista de gestão
+                    ├── lixeira ──► confirmação ("Cancelar" / "Excluir") ── DELETE /posts/:id → lista recarrega
                     └── Novo post ──► "/admin/posts/create" (PostCreateScreen)
                                          ── POST /posts { titulo, conteudo }
                                              ├── campos vazios → erro no campo (sem chamar a API)
@@ -156,7 +161,7 @@ O detalhe sempre busca o post pelo id (em vez de reaproveitar o item da lista), 
 
 - **Só professor:** a aba Admin fica dentro de `Tabs.Protected`, então ALUNO não a vê nem a abre por link direto.
 - **Novos cadastros:** cada cadastro novo (ex.: professores e alunos) entra como uma seção do hub, em `src/app/(app)/admin/<secao>/`.
-- **Listas atualizadas:** `createPost` dispara `notifyPostsChanged()` (`posts-changes.ts`), e toda lista montada com `usePosts` recarrega sem refetch a cada troca de aba.
+- **Listas atualizadas:** `createPost`, `updatePost` e `deletePost` disparam `notifyPostsChanged()` (`posts-changes.ts`), e toda lista (`usePosts`) e todo detalhe (`usePost`) montados recarregam, sem refetch a cada troca de aba.
 
 ## Identidade visual
 

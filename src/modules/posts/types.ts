@@ -19,8 +19,11 @@ export type SearchPostsResponse = {
   posts: Post[];
 };
 
-// POST /posts (e, futuramente, PUT /posts/:id)
+// POST /posts
 export type CreatePostInput = {
   titulo: string;
   conteudo: string;
 };
+
+// PUT /posts/:id (mesmo corpo da criação)
+export type UpdatePostInput = CreatePostInput;
