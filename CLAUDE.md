@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Visão geral
 
-Aplicativo mobile Expo (SDK 58) / React Native 0.88 / React 19 com Expo Router, escrito em TypeScript (`strict`). É um projeto da FIAP (Tech Challenge) em estágio inicial: a Home (`/`, em `src/app/(app)/index.tsx`) é a listagem de posts do módulo `src/modules/posts`, e cada card abre a leitura do post em `/posts/[id]` (`src/app/(app)/posts/[id].tsx`). O código do template original foi movido para `example/` (não faz parte do build).
+Aplicativo mobile Expo (SDK 58) / React Native 0.88 / React 19 com Expo Router, escrito em TypeScript (`strict`). É um projeto da FIAP (Tech Challenge) em estágio inicial: a área logada tem duas abas. A aba **Posts** tem a Home (`/`, em `src/app/(app)/(posts)/index.tsx`) com a listagem de `src/modules/posts`, e cada card abre a leitura do post em `/posts/[id]`. A aba **Admin** (`/admin`, só PROFESSOR) é o hub de cadastros do professor, do módulo `src/modules/admin`; por enquanto tem só a seção Posts, com a criação de post em `/admin/posts/create`. O código do template original foi movido para `example/` (não faz parte do build).
 
 `AGENTS.md` tem regras obrigatórias para este repositório. Em especial: as APIs do Expo mudam a cada SDK, então consulte `https://docs.expo.dev/versions/v58.0.0/` (ou `https://docs.expo.dev/llms.txt`) antes de usar qualquer API de Expo/EAS/React Native, em vez de confiar na memória.
 
@@ -35,12 +35,15 @@ npx expo-doctor             # diagnóstico de dependências/config
 
 ### Arquitetura modular (em implementação)
 
-A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já existem `modules/auth` (login), `modules/posts` (listagem e detalhe) e uma base de `shared/` (config, api, session, theme, ui); `admin` ainda não. Ao criar telas ou lógica, siga essa estrutura:
+A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já existem `modules/auth` (login e `SignOutButton`), `modules/posts` (listagem, detalhe e `createPost`), `modules/admin` (hub e criação de posts) e uma base de `shared/` (config, api, session, theme, ui). Edição e remoção de posts ainda não existem. Ao criar telas ou lógica, siga essa estrutura:
 
 - `src/modules/auth` (login via `POST /login`), `src/modules/posts` (leitura de posts, ALUNO e PROFESSOR) e `src/modules/admin` (criar, editar e remover posts, só PROFESSOR).
 - `src/shared/` para infraestrutura transversal sem regra de negócio: cliente HTTP, sessão (token, role, usuario), UI genérica, tema e config.
 - `src/app/` contém só rotas finas que reexportam telas dos módulos.
 - Dependências: `app → modules → shared`; `admin → posts`; `shared` nunca importa `modules`. Um módulo só importa outro pelo `index.ts` dele.
+- **Navegação:** `src/app/(app)/_layout.tsx` usa `Tabs` com um Stack por aba (`(posts)/_layout.tsx` e `admin/_layout.tsx`). A aba Admin fica dentro de `Tabs.Protected guard={role === "PROFESSOR"}`, o que também bloqueia deep link.
+- **Área do professor:** a aba Admin é genérica. Cada novo cadastro ou edição do professor (ex.: professores e alunos) entra como uma seção nova: um item em `SECTIONS` de `admin-home-screen.tsx` e rotas em `src/app/(app)/admin/<secao>/`, registradas no Stack de `admin/_layout.tsx`.
+- **Invalidação de listas:** escritas em posts chamam `notifyPostsChanged()` (`modules/posts/services/posts-changes.ts`), e o `usePosts` recarrega quando a versão muda. Use o mesmo sinal em edição e remoção.
 
 ## Cores (obrigatório)
 
@@ -71,7 +74,7 @@ Regras:
 - A sessão repassa o token ao cliente HTTP com `setAccessToken`, então `shared/api` não importa `shared/session`.
 - Um 401 em rota autenticada encerra a sessão.
 - `src/app/_layout.tsx` usa `Stack.Protected`: sem sessão, só `(auth)/login` fica acessível; com sessão, só `(app)`.
-- O token é fixo por papel (não é JWT). O `role` da sessão é o que vai decidir o acesso à futura área do professor.
+- O token é fixo por papel (não é JWT). O `role` da sessão decide o acesso à aba Admin. O backend também responde 403 para escrita de ALUNO.
 - Usuários de teste: `carlos.mendes@professor.fiap.br` / `senha-professor-123` e `ana.beatriz@aluno.fiap.br` / `senha-aluno-456`.
 
 ## Pasta `docs/`

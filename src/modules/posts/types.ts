@@ -18,3 +18,9 @@ export type PaginatedPosts = {
 export type SearchPostsResponse = {
   posts: Post[];
 };
+
+// POST /posts (e, futuramente, PUT /posts/:id)
+export type CreatePostInput = {
+  titulo: string;
+  conteudo: string;
+};

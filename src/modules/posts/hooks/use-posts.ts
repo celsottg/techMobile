@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import { ApiError } from "@/shared/api/http-client";
 
+import { getPostsVersion, subscribePostsChanges } from "../services/posts-changes";
 import { fetchPosts, searchPosts } from "../services/posts.api";
 import type { Post } from "../types";
 
@@ -22,6 +23,8 @@ export function usePosts() {
   const [search, setSearch] = useState("");
   const [term, setTerm] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
+  // Muda quando um post é criado em outra tela, para recarregar a lista com ele.
+  const postsVersion = useSyncExternalStore(subscribePostsChanges, getPostsVersion, getPostsVersion);
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
@@ -80,7 +83,7 @@ export function usePosts() {
     }
 
     loadFirstPage();
-  }, [term, reloadKey]);
+  }, [term, reloadKey, postsVersion]);
 
   function retry() {
     setReloadKey((key) => key + 1);

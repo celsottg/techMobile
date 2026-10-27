@@ -1,29 +1,55 @@
-import { Stack } from "expo-router";
-import { Pressable, Text } from "react-native";
+import { Tabs } from "expo-router";
+import { SymbolView } from "expo-symbols";
 
 import { useSession } from "@/shared/session";
 import { useTheme } from "@/shared/theme";
 
 // Área autenticada do app (pós-login). O grupo (app) não aparece na URL.
+// Cada aba tem o próprio Stack; a aba Admin só existe para professores.
 export default function AppLayout() {
-  return (
-    <Stack>
-      <Stack.Screen
-        name="index"
-        options={{ title: "Posts", headerRight: () => <SignOutButton /> }}
-      />
-      <Stack.Screen name="posts/[id]" options={{ title: "Post", headerBackTitle: "Posts" }} />
-    </Stack>
-  );
-}
-
-function SignOutButton() {
   const theme = useTheme();
-  const { signOut } = useSession();
+  const { session } = useSession();
 
   return (
-    <Pressable onPress={signOut} accessibilityRole="button" hitSlop={8}>
-      <Text style={{ color: theme.primary, fontSize: 16, fontWeight: "600" }}>Sair</Text>
-    </Pressable>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: theme.primary,
+        tabBarInactiveTintColor: theme.textSecondary,
+      }}
+    >
+      <Tabs.Screen
+        name="(posts)"
+        options={{
+          title: "Posts",
+          tabBarIcon: ({ color, size }) => (
+            <SymbolView
+              name={{ ios: "doc.text", android: "article", web: "article" }}
+              tintColor={color}
+              size={size}
+            />
+          ),
+        }}
+      />
+      <Tabs.Protected guard={session?.role === "PROFESSOR"}>
+        <Tabs.Screen
+          name="admin"
+          options={{
+            title: "Admin",
+            tabBarIcon: ({ color, size }) => (
+              <SymbolView
+                name={{
+                  ios: "gearshape",
+                  android: "admin_panel_settings",
+                  web: "admin_panel_settings",
+                }}
+                tintColor={color}
+                size={size}
+              />
+            ),
+          }}
+        />
+      </Tabs.Protected>
+    </Tabs>
   );
 }
