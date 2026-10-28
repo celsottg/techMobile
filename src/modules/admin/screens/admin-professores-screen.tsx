@@ -6,14 +6,16 @@ import { Button } from "@/shared/ui/button";
 import { EmptyState, ErrorState, Loading } from "@/shared/ui/state-views";
 
 import { ProfessorRow } from "../components/professor-row";
+import { useDeleteProfessor } from "../hooks/use-delete-professor";
 import { useProfessores } from "../hooks/use-professores";
 
-// Professores cadastrados, com atalho para cadastrar um novo.
+// Gestão de professores: lista, com criar, editar (lápis) e excluir (lixeira).
 export function AdminProfessoresScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { professores, status, error, isRefreshing, isLoadingMore, retry, refresh, loadMore } =
     useProfessores();
+  const { deletingId, remove } = useDeleteProfessor();
 
   function renderBody() {
     if (status === "loading") {
@@ -28,7 +30,19 @@ export function AdminProfessoresScreen() {
       <FlatList
         data={professores}
         keyExtractor={(professor) => String(professor.id)}
-        renderItem={({ item }) => <ProfessorRow professor={item} />}
+        renderItem={({ item }) => (
+          <ProfessorRow
+            professor={item}
+            isDeleting={deletingId === item.id}
+            onEdit={() =>
+              router.push({
+                pathname: "/admin/professores/[id]/edit",
+                params: { id: String(item.id) },
+              })
+            }
+            onDelete={() => remove(item)}
+          />
+        )}
         contentContainerStyle={styles.list}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         onEndReached={loadMore}

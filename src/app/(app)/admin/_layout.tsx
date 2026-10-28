@@ -27,6 +27,10 @@ export default function AdminLayout() {
         name="professores/create"
         options={{ title: "Novo professor", headerBackTitle: "Professores" }}
       />
+      <Stack.Screen
+        name="professores/[id]/edit"
+        options={{ title: "Editar professor", headerBackTitle: "Professores" }}
+      />
     </Stack>
   );
 }

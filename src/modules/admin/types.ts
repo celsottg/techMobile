@@ -5,6 +5,13 @@ export type CreateProfessorInput = {
   senha: string;
 };
 
+// PUT /professores/:id (só PROFESSOR). Sem `senha`, o backend mantém a atual.
+export type UpdateProfessorInput = {
+  nome: string;
+  email: string;
+  senha?: string;
+};
+
 // A senha nunca é devolvida pelo backend.
 export type Professor = {
   id: number;

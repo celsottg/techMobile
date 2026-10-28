@@ -18,6 +18,8 @@ Aplicativo mobile do blog educacional do **Tech Challenge (Pós Tech FIAP)**, de
 | Exclusão de posts pela lixeira, com confirmação (só professor, `DELETE /posts/:id`) | ✅ |
 | Listagem paginada de professores na aba Admin, com rolagem infinita e pull-to-refresh (só professor, `GET /professores`) | ✅ |
 | Cadastro de novos professores na aba Admin (só professor, `POST /professores`) | ✅ |
+| Edição de professores pelo lápis, com os campos preenchidos e senha opcional (só professor, `PUT /professores/:id`) | ✅ |
+| Exclusão de professores pela lixeira, com confirmação (só professor, `DELETE /professores/:id`) | ✅ |
 
 ## Stack
 
@@ -59,7 +61,7 @@ src/
 │       │   └── posts/
 │       │       └── [id].tsx      # "/posts/:id" → modules/posts (detalhe)
 │       └── admin/                # Aba Admin (área do professor)
-│           ├── _layout.tsx       # Stack com header "Admin" (botão "Sair"), "Posts", "Novo post", "Editar post", "Professores" e "Novo professor"
+│           ├── _layout.tsx       # Stack com header "Admin" (botão "Sair"), "Posts", "Novo post", "Editar post", "Professores", "Novo professor" e "Editar professor"
 │           ├── index.tsx         # "/admin" → modules/admin (hub de cadastros)
 │           ├── posts/
 │           │   ├── index.tsx     # "/admin/posts" → modules/admin (gestão de posts)
@@ -67,14 +69,15 @@ src/
 │           │   └── [id]/edit.tsx # "/admin/posts/:id/edit" → modules/admin (editar post)
 │           └── professores/
 │               ├── index.tsx     # "/admin/professores" → modules/admin (lista de professores)
-│               └── create.tsx    # "/admin/professores/create" → modules/admin (novo professor)
+│               ├── create.tsx    # "/admin/professores/create" → modules/admin (novo professor)
+│               └── [id]/edit.tsx # "/admin/professores/:id/edit" → modules/admin (editar professor)
 │
 ├── modules/
 │   ├── admin/                    # Área do professor (consome modules/posts)
-│   │   ├── components/           # PostForm (título/conteúdo, criação e edição), AdminPostRow (lápis e lixeira), ProfessorForm (nome, email e senha), ProfessorRow (nome e email)
-│   │   ├── hooks/                # use-create-post, use-edit-post (carrega e salva), use-delete-post (confirma e exclui), use-create-professor, use-professores (lista paginada)
-│   │   ├── screens/              # AdminHomeScreen (hub), AdminPostsScreen, PostCreateScreen, PostEditScreen, AdminProfessoresScreen, ProfessorCreateScreen
-│   │   ├── services/             # professores.api.ts (GET e POST /professores), professores-changes.ts (sinal de "professores mudaram")
+│   │   ├── components/           # PostForm (título/conteúdo, criação e edição), AdminPostRow (lápis e lixeira), ProfessorForm (nome, email e senha), ProfessorRow (nome, email, lápis e lixeira)
+│   │   ├── hooks/                # use-create-post, use-edit-post (carrega e salva), use-delete-post (confirma e exclui), use-create-professor, use-edit-professor (carrega e salva), use-delete-professor (confirma e exclui), use-professores (lista paginada)
+│   │   ├── screens/              # AdminHomeScreen (hub), AdminPostsScreen, PostCreateScreen, PostEditScreen, AdminProfessoresScreen, ProfessorCreateScreen, ProfessorEditScreen
+│   │   ├── services/             # professores.api.ts (GET, POST, PUT e DELETE /professores), professores-changes.ts (sinal de "professores mudaram")
 │   │   ├── types.ts
 │   │   └── index.ts
 │   │
@@ -166,8 +169,12 @@ O detalhe sempre busca o post pelo id (em vez de reaproveitar o item da lista), 
                                              ├── 400 → destaca os campos inválidos
                                              ├── 403 → "Você não tem permissão para esta operação."
                                              └── 201 → fecha o formulário e volta para a Home, já com o novo post
-   └── Professores ──► "/admin/professores" (AdminProfessoresScreen: nome e email + "Novo professor")
+   └── Professores ──► "/admin/professores" (AdminProfessoresScreen: nome e email, com lápis e lixeira + "Novo professor")
                           │    ── GET /professores?page&limit (rolagem infinita, pull-to-refresh, estado vazio e erro com nova tentativa)
+                          ├── lápis ──► "/admin/professores/:id/edit" (ProfessorEditScreen: GET /professores/:id preenche nome e email)
+                          │                ── PUT /professores/:id { nome, email, senha? } → volta para a lista
+                          │                    (senha em branco mantém a atual; 409 → "Este email já está em uso.")
+                          ├── lixeira ──► confirmação ("Cancelar" / "Excluir") ── DELETE /professores/:id → lista recarrega
                           └── Novo professor ──► "/admin/professores/create" (ProfessorCreateScreen: nome, email e senha)
                                  ── POST /professores { nome, email, senha }
                                      ├── campos vazios, email inválido ou senha com menos de 6 caracteres → erro no campo (sem chamar a API)
@@ -179,7 +186,7 @@ O detalhe sempre busca o post pelo id (em vez de reaproveitar o item da lista), 
 
 - **Só professor:** a aba Admin fica dentro de `Tabs.Protected`, então ALUNO não a vê nem a abre por link direto.
 - **Novos cadastros:** cada cadastro novo (ex.: alunos) entra como uma seção do hub, em `src/app/(app)/admin/<secao>/`.
-- **Listas atualizadas:** `createPost`, `updatePost` e `deletePost` disparam `notifyPostsChanged()` (`posts-changes.ts`), e toda lista (`usePosts`) e todo detalhe (`usePost`) montados recarregam, sem refetch a cada troca de aba. `createProfessor` faz o mesmo com `notifyProfessoresChanged()` para o `useProfessores`.
+- **Listas atualizadas:** `createPost`, `updatePost` e `deletePost` disparam `notifyPostsChanged()` (`posts-changes.ts`), e toda lista (`usePosts`) e todo detalhe (`usePost`) montados recarregam, sem refetch a cada troca de aba. `createProfessor`, `updateProfessor` e `deleteProfessor` fazem o mesmo com `notifyProfessoresChanged()` para o `useProfessores`.
 
 ## Testes e CI
 
