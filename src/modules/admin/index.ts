@@ -4,3 +4,4 @@ export { AdminProfessoresScreen } from "./screens/admin-professores-screen";
 export { PostCreateScreen } from "./screens/post-create-screen";
 export { PostEditScreen } from "./screens/post-edit-screen";
 export { ProfessorCreateScreen } from "./screens/professor-create-screen";
+export { ProfessorEditScreen } from "./screens/professor-edit-screen";

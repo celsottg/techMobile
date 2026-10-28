@@ -15,6 +15,8 @@ type ProfessorFormProps = CreateProfessorInput & {
   isSubmitting: boolean;
   submitTitle: string;
   submittingTitle: string;
+  // Na edição, deixar a senha em branco mantém a atual.
+  senhaOptional?: boolean;
   onChangeField: (field: Field, value: string) => void;
   onSubmit: () => void;
 };
@@ -29,6 +31,7 @@ export function ProfessorForm({
   isSubmitting,
   submitTitle,
   submittingTitle,
+  senhaOptional = false,
   onChangeField,
   onSubmit,
 }: ProfessorFormProps) {
@@ -73,11 +76,11 @@ export function ProfessorForm({
       />
       <TextField
         ref={senhaRef}
-        label="Senha"
+        label={senhaOptional ? "Nova senha (opcional)" : "Senha"}
         value={senha}
         onChangeText={(value) => onChangeField("senha", value)}
         error={fieldErrors.senha}
-        placeholder="Mínimo de 6 caracteres"
+        placeholder={senhaOptional ? "Deixe em branco para manter a atual" : "Mínimo de 6 caracteres"}
         secureTextEntry
         autoCapitalize="none"
         autoCorrect={false}
