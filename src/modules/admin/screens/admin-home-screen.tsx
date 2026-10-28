@@ -12,6 +12,11 @@ type Section = {
 // Cadastros da área do professor. Cada novo cadastro entra aqui e em src/app/(app)/admin/<secao>/.
 const SECTIONS: Section[] = [
   { title: "Posts", description: "Criar e gerenciar posts", href: "/admin/posts" },
+  {
+    title: "Professores",
+    description: "Cadastrar novos professores",
+    href: "/admin/professores/create",
+  },
 ];
 
 export function AdminHomeScreen() {
