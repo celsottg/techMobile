@@ -11,3 +11,11 @@ export type Professor = {
   nome: string;
   email: string;
 };
+
+// GET /professores?page&limit
+export type PaginatedProfessores = {
+  professores: Professor[];
+  page: number;
+  limit: number;
+  total: number;
+};

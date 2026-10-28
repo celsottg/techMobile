@@ -15,10 +15,10 @@ it("lista as seções do admin e abre a de posts", async () => {
   expect(mockRouter.push).toHaveBeenCalledWith("/admin/posts");
 });
 
-it("abre o cadastro de professores", async () => {
+it("abre a lista de professores", async () => {
   await render(<AdminHomeScreen />);
 
   await fireEvent.press(screen.getByRole("button", { name: "Professores" }));
 
-  expect(mockRouter.push).toHaveBeenCalledWith("/admin/professores/create");
+  expect(mockRouter.push).toHaveBeenCalledWith("/admin/professores");
 });

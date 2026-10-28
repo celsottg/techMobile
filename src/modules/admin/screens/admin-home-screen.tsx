@@ -14,8 +14,8 @@ const SECTIONS: Section[] = [
   { title: "Posts", description: "Criar e gerenciar posts", href: "/admin/posts" },
   {
     title: "Professores",
-    description: "Cadastrar novos professores",
-    href: "/admin/professores/create",
+    description: "Ver e cadastrar professores",
+    href: "/admin/professores",
   },
 ];
 

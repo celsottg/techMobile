@@ -24,7 +24,7 @@ describe("ProfessorCreateScreen", () => {
     expect(createProfessor).not.toHaveBeenCalled();
   });
 
-  it("cadastra e volta para o hub do admin", async () => {
+  it("cadastra e volta para a lista de professores", async () => {
     jest
       .mocked(createProfessor)
       .mockResolvedValue({ id: 3, nome: "Marina Souza", email: "marina@professor.fiap.br" });
@@ -40,6 +40,6 @@ describe("ProfessorCreateScreen", () => {
       email: "marina@professor.fiap.br",
       senha: "senha-123",
     });
-    expect(mockRouter.dismissTo).toHaveBeenCalledWith("/admin");
+    expect(mockRouter.dismissTo).toHaveBeenCalledWith("/admin/professores");
   });
 });
