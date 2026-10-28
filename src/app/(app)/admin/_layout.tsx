@@ -20,8 +20,12 @@ export default function AdminLayout() {
         options={{ title: "Editar post", headerBackTitle: "Posts" }}
       />
       <Stack.Screen
+        name="professores/index"
+        options={{ title: "Professores", headerBackTitle: "Admin" }}
+      />
+      <Stack.Screen
         name="professores/create"
-        options={{ title: "Novo professor", headerBackTitle: "Admin" }}
+        options={{ title: "Novo professor", headerBackTitle: "Professores" }}
       />
     </Stack>
   );

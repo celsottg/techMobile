@@ -11,8 +11,8 @@ export function ProfessorCreateScreen() {
   const router = useRouter();
   const { nome, email, senha, fieldErrors, formError, isSubmitting, changeField, submit } =
     useCreateProfessor(() => {
-      // Fecha o formulário e volta para o hub do admin.
-      router.dismissTo("/admin");
+      // Fecha o formulário e volta para a lista, que já recarrega com o novo professor.
+      router.dismissTo("/admin/professores");
     });
 
   return (
