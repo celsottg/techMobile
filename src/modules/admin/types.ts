@@ -27,6 +27,13 @@ export type PaginatedProfessores = {
   total: number;
 };
 
+// POST /alunos (só PROFESSOR). A senha tem no mínimo 6 caracteres.
+export type CreateAlunoInput = {
+  nome: string;
+  email: string;
+  senha: string;
+};
+
 // PUT /alunos/:id (só PROFESSOR). Sem `senha`, o backend mantém a atual.
 export type UpdateAlunoInput = {
   nome: string;

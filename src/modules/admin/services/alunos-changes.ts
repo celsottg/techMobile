@@ -1,4 +1,4 @@
-// Sinal de que os alunos mudaram no backend (edição e exclusão).
+// Sinal de que os alunos mudaram no backend (cadastro, edição e exclusão).
 // A lista montada observa a versão e recarrega quando ela muda, sem refetch a cada foco.
 let version = 0;
 const listeners = new Set<() => void>();

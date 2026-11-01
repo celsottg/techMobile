@@ -1,4 +1,5 @@
 export { AdminAlunosScreen } from "./screens/admin-alunos-screen";
+export { AlunoCreateScreen } from "./screens/aluno-create-screen";
 export { AlunoEditScreen } from "./screens/aluno-edit-screen";
 export { AdminHomeScreen } from "./screens/admin-home-screen";
 export { AdminPostsScreen } from "./screens/admin-posts-screen";
