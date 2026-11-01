@@ -22,3 +22,11 @@ it("abre a lista de professores", async () => {
 
   expect(mockRouter.push).toHaveBeenCalledWith("/admin/professores");
 });
+
+it("abre a lista de alunos", async () => {
+  await render(<AdminHomeScreen />);
+
+  await fireEvent.press(screen.getByRole("button", { name: "Alunos" }));
+
+  expect(mockRouter.push).toHaveBeenCalledWith("/admin/alunos");
+});
