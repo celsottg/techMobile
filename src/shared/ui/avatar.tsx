@@ -1,15 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import { Radius, Typography, useTheme } from "@/shared/theme";
-
-// Iniciais do primeiro e do último nome ("Ana Beatriz Silva" → "AS").
-export function initials(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "?";
-  const first = parts[0][0];
-  const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
-  return (first + last).toUpperCase();
-}
+import { initials } from "@/shared/utils/person-name";
 
 // Círculo com as iniciais da pessoa, usado nas listas de professores e alunos.
 export function Avatar({ name }: { name: string }) {

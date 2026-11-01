@@ -28,6 +28,16 @@ it("cumprimenta o professor pelo primeiro nome", async () => {
   expect(screen.getByText("Olá, Carlos")).toBeTruthy();
 });
 
+it("cumprimenta pelo nome sem o título", async () => {
+  mockSession({
+    ...professorSession,
+    usuario: { ...professorSession.usuario, nome: "Dr. Carlos Mendes" },
+  });
+  await render(<AdminHomeScreen />);
+
+  expect(screen.getByText("Olá, Carlos")).toBeTruthy();
+});
+
 it("usa uma saudação genérica sem sessão", async () => {
   mockSession(null);
   await render(<AdminHomeScreen />);

@@ -5,6 +5,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSession } from "@/shared/session";
 import { Radius, Shadow, Spacing, Typography, useTheme } from "@/shared/theme";
 import type { IconName } from "@/shared/ui/icon-button";
+import { firstName } from "@/shared/utils/person-name";
 
 type Section = {
   title: string;
@@ -39,7 +40,7 @@ export function AdminHomeScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { session } = useSession();
-  const firstName = session?.usuario.nome.trim().split(/\s+/)[0];
+  const name = session ? firstName(session.usuario.nome) : "";
 
   return (
     <FlatList
@@ -51,7 +52,7 @@ export function AdminHomeScreen() {
       ListHeaderComponent={
         <View style={styles.header}>
           <Text style={[Typography.display, { color: theme.text }]}>
-            {firstName ? `Olá, ${firstName}` : "Olá"}
+            {name ? `Olá, ${name}` : "Olá"}
           </Text>
           <Text style={[Typography.body, { color: theme.textSecondary }]}>
             Gerencie as publicações e os cadastros da instituição.

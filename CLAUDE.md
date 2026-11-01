@@ -37,7 +37,7 @@ npx expo-doctor             # diagnóstico de dependências/config
 
 ### Arquitetura modular (em implementação)
 
-A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já existem `modules/auth` (login e `SignOutButton`), `modules/posts` (listagem, detalhe e `createPost`/`updatePost`/`deletePost`), `modules/admin` (hub, criação, edição e exclusão de posts) e uma base de `shared/` (config, api, session, theme, ui). Ao criar telas ou lógica, siga essa estrutura:
+A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já existem `modules/auth` (login e `SignOutButton`), `modules/posts` (listagem, detalhe e `createPost`/`updatePost`/`deletePost`), `modules/admin` (hub, criação, edição e exclusão de posts) e uma base de `shared/` (config, api, session, theme, ui e utils, com `firstName`/`initials` que ignoram títulos como "Dr." no nome). Ao criar telas ou lógica, siga essa estrutura:
 
 - `src/modules/auth` (login via `POST /login`), `src/modules/posts` (leitura de posts, ALUNO e PROFESSOR) e `src/modules/admin` (criar, editar e remover posts, só PROFESSOR).
 - `src/shared/` para infraestrutura transversal sem regra de negócio: cliente HTTP, sessão (token, role, usuario), UI genérica, tema e config.

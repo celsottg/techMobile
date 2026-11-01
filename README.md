@@ -116,6 +116,7 @@ src/
     ├── config/env.ts             # URL da API
     ├── session/                  # SessionProvider, useSession, persistência da sessão
     ├── theme/                    # Paleta, tema do React Navigation, espaçamentos, useTheme
+    ├── utils/person-name.ts      # Primeiro nome e iniciais, sem títulos como "Dr." ou "Profa."
     └── ui/                       # Button, IconButton, TextField, Avatar, Badge, FormError, ListHeader, Loading, ErrorState, EmptyState, stackHeaderOptions
 ```
 
