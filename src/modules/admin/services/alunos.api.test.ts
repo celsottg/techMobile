@@ -1,7 +1,7 @@
-import { httpDelete, httpGet, httpPut } from "@/shared/api/http-client";
+import { httpDelete, httpGet, httpPost, httpPut } from "@/shared/api/http-client";
 
 import { getAlunosVersion } from "./alunos-changes";
-import { deleteAluno, fetchAluno, fetchAlunos, updateAluno } from "./alunos.api";
+import { createAluno, deleteAluno, fetchAluno, fetchAlunos, updateAluno } from "./alunos.api";
 
 jest.mock("@/shared/api/http-client");
 
@@ -13,6 +13,16 @@ it("lista os alunos com GET /alunos paginado", async () => {
 
   await expect(fetchAlunos(2, 10)).resolves.toEqual(result);
   expect(httpGet).toHaveBeenCalledWith("/alunos", { page: 2, limit: 10 });
+});
+
+it("cadastra o aluno com POST /alunos e avisa que a lista mudou", async () => {
+  jest.mocked(httpPost).mockResolvedValue(aluno);
+  const input = { nome: "Ana Beatriz Silva", email: "ana.beatriz@aluno.fiap.br", senha: "senha-123" };
+  const before = getAlunosVersion();
+
+  await expect(createAluno(input)).resolves.toEqual(aluno);
+  expect(httpPost).toHaveBeenCalledWith("/alunos", input);
+  expect(getAlunosVersion()).toBe(before + 1);
 });
 
 it("busca um aluno com GET /alunos/:id", async () => {

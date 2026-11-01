@@ -2,13 +2,14 @@ import { useRouter } from "expo-router";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 
 import { Spacing, useTheme } from "@/shared/theme";
+import { Button } from "@/shared/ui/button";
 import { EmptyState, ErrorState, Loading } from "@/shared/ui/state-views";
 
 import { AlunoRow } from "../components/aluno-row";
 import { useAlunos } from "../hooks/use-alunos";
 import { useDeleteAluno } from "../hooks/use-delete-aluno";
 
-// Gestão de alunos: lista, com editar (lápis) e excluir (lixeira).
+// Gestão de alunos: lista, com criar, editar (lápis) e excluir (lixeira).
 export function AdminAlunosScreen() {
   const theme = useTheme();
   const router = useRouter();
@@ -49,7 +50,7 @@ export function AdminAlunosScreen() {
         refreshing={isRefreshing}
         onRefresh={refresh}
         ListEmptyComponent={
-          <EmptyState title="Nenhum aluno cadastrado" message="Os alunos cadastrados aparecem aqui." />
+          <EmptyState title="Nenhum aluno cadastrado" message="Toque em Novo aluno para cadastrar o primeiro." />
         }
         ListFooterComponent={
           isLoadingMore ? <ActivityIndicator style={styles.footer} color={theme.primary} /> : undefined
@@ -58,12 +59,24 @@ export function AdminAlunosScreen() {
     );
   }
 
-  return <View style={[styles.container, { backgroundColor: theme.background }]}>{renderBody()}</View>;
+  return (
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={styles.actions}>
+        <Button title="Novo aluno" onPress={() => router.push("/admin/alunos/create")} />
+      </View>
+      {renderBody()}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  actions: {
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.two,
   },
   list: {
     flexGrow: 1,

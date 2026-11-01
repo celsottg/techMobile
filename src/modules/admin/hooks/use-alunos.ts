@@ -17,7 +17,7 @@ function errorMessage(error: unknown) {
 /** Listagem paginada de alunos (GET /alunos, só PROFESSOR), com rolagem infinita. */
 export function useAlunos() {
   const [reloadKey, setReloadKey] = useState(0);
-  // Muda quando um aluno é editado ou excluído, para recarregar a lista atualizada.
+  // Muda quando um aluno é cadastrado, editado ou excluído, para recarregar a lista atualizada.
   const version = useSyncExternalStore(subscribeAlunosChanges, getAlunosVersion, getAlunosVersion);
 
   const [alunos, setAlunos] = useState<Aluno[]>([]);

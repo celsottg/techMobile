@@ -17,7 +17,7 @@ const SECTIONS: Section[] = [
     description: "Ver e cadastrar professores",
     href: "/admin/professores",
   },
-  { title: "Alunos", description: "Ver, editar e excluir alunos", href: "/admin/alunos" },
+  { title: "Alunos", description: "Ver e cadastrar alunos", href: "/admin/alunos" },
 ];
 
 export function AdminHomeScreen() {

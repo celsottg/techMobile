@@ -34,6 +34,15 @@ beforeEach(() => {
 });
 
 describe("AdminAlunosScreen", () => {
+  it("abre o cadastro de aluno", async () => {
+    mockAlunos({});
+    await render(<AdminAlunosScreen />);
+
+    await fireEvent.press(screen.getByRole("button", { name: "Novo aluno" }));
+
+    expect(mockRouter.push).toHaveBeenCalledWith("/admin/alunos/create");
+  });
+
   it("mostra o carregamento e o erro com nova tentativa", async () => {
     mockAlunos({ status: "loading" });
     const { rerender } = await render(<AdminAlunosScreen />);
