@@ -1,3 +1,4 @@
+export { AdminAlunosScreen } from "./screens/admin-alunos-screen";
 export { AdminHomeScreen } from "./screens/admin-home-screen";
 export { AdminPostsScreen } from "./screens/admin-posts-screen";
 export { AdminProfessoresScreen } from "./screens/admin-professores-screen";

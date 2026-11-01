@@ -26,3 +26,18 @@ export type PaginatedProfessores = {
   limit: number;
   total: number;
 };
+
+// A senha nunca é devolvida pelo backend.
+export type Aluno = {
+  id: number;
+  nome: string;
+  email: string;
+};
+
+// GET /alunos?page&limit
+export type PaginatedAlunos = {
+  alunos: Aluno[];
+  page: number;
+  limit: number;
+  total: number;
+};
