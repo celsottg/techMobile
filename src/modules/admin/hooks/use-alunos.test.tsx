@@ -2,6 +2,7 @@ import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { ApiError } from "@/shared/api/http-client";
 
+import { notifyAlunosChanged } from "../services/alunos-changes";
 import { fetchAlunos } from "../services/alunos.api";
 import { useAlunos } from "./use-alunos";
 
@@ -105,5 +106,16 @@ describe("useAlunos", () => {
     await waitFor(() => expect(result.current.alunos[0].id).toBe(9));
     expect(result.current.status).toBe("success");
     expect(result.current.isRefreshing).toBe(false);
+  });
+
+  it("recarrega quando um aluno é alterado", async () => {
+    fetchMock.mockResolvedValue(page([1, 2], 1, 2));
+    const { result } = await renderHook(() => useAlunos());
+    await waitFor(() => expect(result.current.status).toBe("success"));
+
+    fetchMock.mockResolvedValue(page([2], 1, 1));
+    await act(async () => notifyAlunosChanged());
+
+    await waitFor(() => expect(result.current.alunos.map((a) => a.id)).toEqual([2]));
   });
 });

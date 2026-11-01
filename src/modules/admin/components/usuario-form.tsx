@@ -5,24 +5,29 @@ import { Spacing, useTheme } from "@/shared/theme";
 import { Button } from "@/shared/ui/button";
 import { TextField, type TextFieldRef } from "@/shared/ui/text-field";
 
-import type { CreateProfessorInput } from "../types";
+type UsuarioFormValues = {
+  nome: string;
+  email: string;
+  senha: string;
+};
 
-type Field = keyof CreateProfessorInput;
+type Field = keyof UsuarioFormValues;
 
-type ProfessorFormProps = CreateProfessorInput & {
+type UsuarioFormProps = UsuarioFormValues & {
   fieldErrors: Partial<Record<Field, string>>;
   formError: string | null;
   isSubmitting: boolean;
   submitTitle: string;
   submittingTitle: string;
+  emailPlaceholder: string;
   // Na edição, deixar a senha em branco mantém a atual.
   senhaOptional?: boolean;
   onChangeField: (field: Field, value: string) => void;
   onSubmit: () => void;
 };
 
-// Campos de um professor (nome, email e senha).
-export function ProfessorForm({
+// Campos de um usuário (professor ou aluno): nome, email e senha.
+export function UsuarioForm({
   nome,
   email,
   senha,
@@ -31,10 +36,11 @@ export function ProfessorForm({
   isSubmitting,
   submitTitle,
   submittingTitle,
+  emailPlaceholder,
   senhaOptional = false,
   onChangeField,
   onSubmit,
-}: ProfessorFormProps) {
+}: UsuarioFormProps) {
   const theme = useTheme();
   const emailRef = useRef<TextFieldRef>(null);
   const senhaRef = useRef<TextFieldRef>(null);
@@ -65,7 +71,7 @@ export function ProfessorForm({
         value={email}
         onChangeText={(value) => onChangeField("email", value)}
         error={fieldErrors.email}
-        placeholder="professor@fiap.br"
+        placeholder={emailPlaceholder}
         keyboardType="email-address"
         autoCapitalize="none"
         autoCorrect={false}

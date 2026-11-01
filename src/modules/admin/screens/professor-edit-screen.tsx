@@ -5,7 +5,7 @@ import { Spacing, useTheme } from "@/shared/theme";
 import { Button } from "@/shared/ui/button";
 import { EmptyState, ErrorState, Loading } from "@/shared/ui/state-views";
 
-import { ProfessorForm } from "../components/professor-form";
+import { UsuarioForm } from "../components/usuario-form";
 import { useEditProfessor } from "../hooks/use-edit-professor";
 
 export function ProfessorEditScreen() {
@@ -56,7 +56,7 @@ export function ProfessorEditScreen() {
 
     return (
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <ProfessorForm
+        <UsuarioForm
           nome={nome}
           email={email}
           senha={senha}
@@ -64,6 +64,7 @@ export function ProfessorEditScreen() {
           formError={formError}
           isSubmitting={isSubmitting}
           submitTitle="Salvar alterações"
+          emailPlaceholder="professor@fiap.br"
           submittingTitle="Salvando..."
           senhaOptional
           onChangeField={changeField}

@@ -3,7 +3,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from "react-na
 
 import { Spacing, useTheme } from "@/shared/theme";
 
-import { ProfessorForm } from "../components/professor-form";
+import { UsuarioForm } from "../components/usuario-form";
 import { useCreateProfessor } from "../hooks/use-create-professor";
 
 export function ProfessorCreateScreen() {
@@ -21,7 +21,7 @@ export function ProfessorCreateScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <ProfessorForm
+        <UsuarioForm
           nome={nome}
           email={email}
           senha={senha}
@@ -29,6 +29,7 @@ export function ProfessorCreateScreen() {
           formError={formError}
           isSubmitting={isSubmitting}
           submitTitle="Cadastrar"
+          emailPlaceholder="professor@fiap.br"
           submittingTitle="Cadastrando..."
           onChangeField={changeField}
           onSubmit={submit}
