@@ -51,7 +51,8 @@ describe("PostDetailScreen", () => {
 
     expect(screen.getByRole("header", { name: "Primeiro post" })).toBeTruthy();
     expect(screen.getByText("Conteúdo do primeiro post")).toBeTruthy();
-    expect(screen.getByText("Publicado em 30/06/2026 · Atualizado em 02/07/2026")).toBeTruthy();
+    expect(screen.getByText("Publicado em 30/06/2026")).toBeTruthy();
+    expect(screen.getByText("Atualizado em 02/07/2026")).toBeTruthy();
   });
 
   it("volta para a tela anterior quando o post não existe", async () => {

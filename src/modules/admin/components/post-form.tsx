@@ -1,9 +1,10 @@
 import { useRef } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import type { CreatePostInput } from "@/modules/posts";
-import { Spacing, useTheme } from "@/shared/theme";
+import { Radius, Shadow, Spacing, useTheme } from "@/shared/theme";
 import { Button } from "@/shared/ui/button";
+import { FormError } from "@/shared/ui/form-error";
 import { TextField, type TextFieldRef } from "@/shared/ui/text-field";
 
 type Field = keyof CreatePostInput;
@@ -34,12 +35,10 @@ export function PostForm({
   const conteudoRef = useRef<TextFieldRef>(null);
 
   return (
-    <View style={styles.form}>
-      {formError && (
-        <View style={[styles.formError, { borderColor: theme.danger }]} accessibilityRole="alert">
-          <Text style={{ color: theme.danger }}>{formError}</Text>
-        </View>
-      )}
+    <View
+      style={[styles.form, Shadow.card, { backgroundColor: theme.card, borderColor: theme.border }]}
+    >
+      <FormError message={formError} />
 
       <TextField
         label="Título"
@@ -75,14 +74,16 @@ export function PostForm({
 
 const styles = StyleSheet.create({
   form: {
+    // Cartão centralizado e com largura limitada em telas largas (web/tablet).
+    width: "100%",
+    maxWidth: 720,
+    alignSelf: "center",
     gap: Spacing.three,
-  },
-  formError: {
+    padding: Spacing.four,
     borderWidth: 1,
-    borderRadius: 10,
-    padding: Spacing.three,
+    borderRadius: Radius.lg,
   },
   conteudo: {
-    minHeight: 200,
+    minHeight: 240,
   },
 });

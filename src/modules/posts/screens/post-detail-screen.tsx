@@ -1,7 +1,8 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { Spacing, useTheme } from "@/shared/theme";
+import { Radius, Shadow, Spacing, Typography, useTheme } from "@/shared/theme";
+import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { EmptyState, ErrorState, Loading } from "@/shared/ui/state-views";
 
@@ -47,16 +48,30 @@ export function PostDetailScreen() {
 
     return (
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
-          <Text style={[styles.title, { color: theme.text }]} accessibilityRole="header">
+        <View
+          style={[
+            styles.card,
+            Shadow.card,
+            { backgroundColor: theme.card, borderColor: theme.border },
+          ]}
+        >
+          <Badge label="Post" />
+          <Text style={[Typography.title, { color: theme.text }]} accessibilityRole="header">
             {post.titulo}
           </Text>
-          <Text style={[styles.meta, { color: theme.textSecondary }]}>
-            Publicado em {formatDate(post.data_publicacao)}
-            {wasUpdated && ` · Atualizado em ${formatDate(post.data_atualizacao)}`}
-          </Text>
+          <View style={styles.meta}>
+            <Text style={[Typography.caption, { color: theme.textSecondary }]}>
+              Publicado em {formatDate(post.data_publicacao)}
+            </Text>
+            {wasUpdated && (
+              <Badge
+                label={`Atualizado em ${formatDate(post.data_atualizacao)}`}
+                variant="accent"
+              />
+            )}
+          </View>
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
-          <Text style={[styles.body, { color: theme.text }]} selectable>
+          <Text style={[Typography.reading, { color: theme.text }]} selectable>
             {post.conteudo}
           </Text>
         </View>
@@ -75,26 +90,24 @@ const styles = StyleSheet.create({
     padding: Spacing.three,
   },
   card: {
+    // Largura de leitura confortável em telas largas (web/tablet).
+    width: "100%",
+    maxWidth: 720,
+    alignSelf: "center",
     padding: Spacing.four,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     borderWidth: 1,
     gap: Spacing.two,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    lineHeight: 30,
-  },
   meta: {
-    fontSize: 13,
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: Spacing.two,
   },
   divider: {
     height: 1,
     marginVertical: Spacing.two,
-  },
-  body: {
-    fontSize: 16,
-    lineHeight: 24,
   },
   notFound: {
     flex: 1,

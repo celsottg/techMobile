@@ -16,6 +16,7 @@ describe("ProfessorRow", () => {
     await fireEvent.press(screen.getByRole("button", { name: "Excluir Carlos Mendes" }));
 
     expect(screen.getByText("Carlos Mendes")).toBeTruthy();
+    expect(screen.getByText("Professor")).toBeTruthy();
     expect(screen.getByText("carlos@professor.fiap.br")).toBeTruthy();
     expect(onEdit).toHaveBeenCalledTimes(1);
     expect(onDelete).toHaveBeenCalledTimes(1);

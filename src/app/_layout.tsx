@@ -1,4 +1,5 @@
 import { SplashScreen, Stack, ThemeProvider } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
 import { SessionProvider, useSession } from "@/shared/session";
 import { NavigationTheme } from "@/shared/theme";
@@ -9,6 +10,8 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={NavigationTheme}>
       <SessionProvider>
+        {/* Cabeçalhos e topo do login são azuis: ícones claros na barra de status. */}
+        <StatusBar style="light" />
         <SplashScreenController />
         <RootNavigator />
       </SessionProvider>

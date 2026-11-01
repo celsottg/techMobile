@@ -1,7 +1,9 @@
-import { SymbolView } from "expo-symbols";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { Spacing, useTheme } from "@/shared/theme";
+import { Radius, Shadow, Spacing, Typography, useTheme } from "@/shared/theme";
+import { Avatar } from "@/shared/ui/avatar";
+import { Badge } from "@/shared/ui/badge";
+import { IconButton } from "@/shared/ui/icon-button";
 
 import type { Aluno } from "../types";
 
@@ -12,7 +14,8 @@ type AlunoRowProps = {
   onDelete: () => void;
 };
 
-// Nome e email de um aluno na listagem, com os atalhos de editar (lápis) e excluir (lixeira).
+// Avatar, nome e email de um aluno na listagem,
+// com os atalhos de editar (lápis) e excluir (lixeira).
 export function AlunoRow({ aluno, isDeleting, onEdit, onDelete }: AlunoRowProps) {
   const theme = useTheme();
 
@@ -20,46 +23,34 @@ export function AlunoRow({ aluno, isDeleting, onEdit, onDelete }: AlunoRowProps)
     <View
       style={[
         styles.row,
+        Shadow.card,
         { backgroundColor: theme.card, borderColor: theme.border, opacity: isDeleting ? 0.5 : 1 },
       ]}
     >
+      <Avatar name={aluno.nome} />
       <View style={styles.info}>
-        <Text style={[styles.name, { color: theme.text }]} numberOfLines={1}>
+        <Text style={[Typography.bodyStrong, { color: theme.text }]} numberOfLines={1}>
           {aluno.nome}
         </Text>
-        <Text style={[styles.email, { color: theme.textSecondary }]} numberOfLines={1}>
+        <Text style={[Typography.caption, { color: theme.textSecondary }]} numberOfLines={1}>
           {aluno.email}
         </Text>
+        <Badge label="Aluno" />
       </View>
       <View style={styles.actions}>
-        <Pressable
+        <IconButton
+          icon={{ ios: "pencil", android: "edit", web: "edit" }}
+          label={`Editar ${aluno.nome}`}
           onPress={onEdit}
           disabled={isDeleting}
-          accessibilityRole="button"
-          accessibilityLabel={`Editar ${aluno.nome}`}
-          hitSlop={8}
-          style={({ pressed }) => [styles.iconButton, { opacity: pressed ? 0.6 : 1 }]}
-        >
-          <SymbolView
-            name={{ ios: "pencil", android: "edit", web: "edit" }}
-            tintColor={theme.primary}
-            size={22}
-          />
-        </Pressable>
-        <Pressable
+        />
+        <IconButton
+          icon={{ ios: "trash", android: "delete", web: "delete" }}
+          label={`Excluir ${aluno.nome}`}
           onPress={onDelete}
+          tone="danger"
           disabled={isDeleting}
-          accessibilityRole="button"
-          accessibilityLabel={`Excluir ${aluno.nome}`}
-          hitSlop={8}
-          style={({ pressed }) => [styles.iconButton, { opacity: pressed ? 0.6 : 1 }]}
-        >
-          <SymbolView
-            name={{ ios: "trash", android: "delete", web: "delete" }}
-            tintColor={theme.danger}
-            size={22}
-          />
-        </Pressable>
+        />
       </View>
     </View>
   );
@@ -70,28 +61,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: Spacing.three,
-    paddingVertical: Spacing.two,
-    paddingLeft: Spacing.three,
-    paddingRight: Spacing.two,
-    borderRadius: 12,
+    padding: Spacing.three,
+    borderRadius: Radius.md,
     borderWidth: 1,
   },
   info: {
     flex: 1,
     gap: Spacing.one,
   },
-  name: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  email: {
-    fontSize: 14,
-  },
   actions: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  iconButton: {
-    padding: Spacing.two,
+    gap: Spacing.two,
   },
 });

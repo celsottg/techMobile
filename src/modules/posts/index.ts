@@ -11,6 +11,7 @@ export {
   searchPosts,
   updatePost,
 } from "./services/posts.api";
+export { formatDate } from "./utils/format-date";
 export type {
   CreatePostInput,
   PaginatedPosts,

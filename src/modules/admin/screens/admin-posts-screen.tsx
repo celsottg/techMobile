@@ -3,7 +3,7 @@ import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 
 import { usePosts } from "@/modules/posts";
 import { Spacing, useTheme } from "@/shared/theme";
-import { Button } from "@/shared/ui/button";
+import { ListHeader } from "@/shared/ui/list-header";
 import { EmptyState, ErrorState, Loading } from "@/shared/ui/state-views";
 
 import { AdminPostRow } from "../components/admin-post-row";
@@ -13,8 +13,17 @@ import { useDeletePost } from "../hooks/use-delete-post";
 export function AdminPostsScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const { posts, status, error, isRefreshing, isLoadingMore, retry, refresh, loadMore } =
-    usePosts();
+  const {
+    posts,
+    total,
+    status,
+    error,
+    isRefreshing,
+    isLoadingMore,
+    retry,
+    refresh,
+    loadMore,
+  } = usePosts();
   const { deletingId, remove } = useDeletePost();
 
   function renderBody() {
@@ -47,7 +56,11 @@ export function AdminPostsScreen() {
         refreshing={isRefreshing}
         onRefresh={refresh}
         ListEmptyComponent={
-          <EmptyState title="Nenhum post publicado" message="Toque em Novo post para criar o primeiro." />
+          <EmptyState
+            title="Nenhum post publicado"
+            message="Toque em Novo post para criar o primeiro."
+            icon={{ ios: "doc.text", android: "article", web: "article" }}
+          />
         }
         ListFooterComponent={
           isLoadingMore ? <ActivityIndicator style={styles.footer} color={theme.primary} /> : undefined
@@ -59,7 +72,12 @@ export function AdminPostsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.actions}>
-        <Button title="Novo post" onPress={() => router.push("/admin/posts/create")} />
+        <ListHeader
+          total={status === "success" ? total : undefined}
+          singular="post"
+          plural="posts"
+          action={{ title: "Novo post", onPress: () => router.push("/admin/posts/create") }}
+        />
       </View>
       {renderBody()}
     </View>

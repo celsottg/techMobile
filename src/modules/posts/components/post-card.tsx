@@ -1,6 +1,8 @@
-import { Pressable, StyleSheet, Text } from "react-native";
+import { SymbolView } from "expo-symbols";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { Spacing, useTheme } from "@/shared/theme";
+import { Radius, Shadow, Spacing, Typography, useTheme } from "@/shared/theme";
+import { Badge } from "@/shared/ui/badge";
 
 import type { Post } from "../types";
 import { formatDate } from "../utils/format-date";
@@ -22,6 +24,7 @@ export function PostCard({ post, onPress }: PostCardProps) {
       accessibilityHint="Abre o post completo"
       style={({ pressed }) => [
         styles.card,
+        Shadow.card,
         {
           backgroundColor: theme.card,
           // Card pressionado = post selecionado, destacado com a cor primária.
@@ -29,36 +32,58 @@ export function PostCard({ post, onPress }: PostCardProps) {
         },
       ]}
     >
-      <Text style={[styles.title, { color: theme.text }]} numberOfLines={2}>
-        {post.titulo}
-      </Text>
-      <Text style={[styles.meta, { color: theme.textSecondary }]}>
-        Publicado em {formatDate(post.data_publicacao)}
-        {wasUpdated && ` · Atualizado em ${formatDate(post.data_atualizacao)}`}
-      </Text>
-      <Text style={[styles.content, { color: theme.text }]} numberOfLines={4}>
-        {post.conteudo}
-      </Text>
+      {/* Faixa dourada à esquerda, marca visual dos posts do blog. */}
+      <View style={[styles.strip, { backgroundColor: theme.accent }]} />
+      <View style={styles.body}>
+        <View style={styles.meta}>
+          <SymbolView
+            name={{
+              ios: "calendar",
+              android: "calendar_today",
+              web: "calendar_today",
+            }}
+            tintColor={theme.textSecondary}
+            size={14}
+          />
+          <Text style={[Typography.caption, styles.date, { color: theme.textSecondary }]}>
+            Publicado em {formatDate(post.data_publicacao)}
+          </Text>
+          {wasUpdated && <Badge label="Atualizado" variant="accent" />}
+        </View>
+        <Text style={[Typography.heading, { color: theme.text }]} numberOfLines={2}>
+          {post.titulo}
+        </Text>
+        <Text style={[Typography.body, { color: theme.textSecondary }]} numberOfLines={3}>
+          {post.conteudo}
+        </Text>
+        <Text style={[Typography.label, { color: theme.primary }]}>Ler post ›</Text>
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    padding: Spacing.three,
-    borderRadius: 12,
+    flexDirection: "row",
+    borderRadius: Radius.md,
     borderWidth: 1,
+    overflow: "hidden",
+  },
+  strip: {
+    width: 4,
+  },
+  body: {
+    flex: 1,
+    padding: Spacing.three,
     gap: Spacing.two,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
   meta: {
-    fontSize: 13,
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: Spacing.one + 2,
   },
-  content: {
-    fontSize: 15,
-    lineHeight: 22,
+  date: {
+    marginRight: Spacing.one,
   },
 });

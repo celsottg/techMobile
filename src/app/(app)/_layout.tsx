@@ -2,7 +2,7 @@ import { Tabs } from "expo-router";
 import { SymbolView } from "expo-symbols";
 
 import { useSession } from "@/shared/session";
-import { useTheme } from "@/shared/theme";
+import { Typography, useTheme } from "@/shared/theme";
 
 // Área autenticada do app (pós-login). O grupo (app) não aparece na URL.
 // Cada aba tem o próprio Stack; a aba Admin só existe para professores.
@@ -16,15 +16,17 @@ export default function AppLayout() {
         headerShown: false,
         tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: theme.textSecondary,
+        tabBarLabelStyle: Typography.captionStrong,
+        tabBarStyle: { backgroundColor: theme.card, borderTopColor: theme.border },
       }}
     >
       <Tabs.Screen
         name="(posts)"
         options={{
-          title: "Posts",
+          title: "Blog",
           tabBarIcon: ({ color, size }) => (
             <SymbolView
-              name={{ ios: "doc.text", android: "article", web: "article" }}
+              name={{ ios: "book", android: "menu_book", web: "menu_book" }}
               tintColor={color}
               size={size}
             />
@@ -35,7 +37,7 @@ export default function AppLayout() {
         <Tabs.Screen
           name="admin"
           options={{
-            title: "Admin",
+            title: "Gestão",
             tabBarIcon: ({ color, size }) => (
               <SymbolView
                 name={{

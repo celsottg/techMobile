@@ -16,6 +16,7 @@ describe("AdminPostRow", () => {
     await fireEvent.press(screen.getByRole("button", { name: "Excluir Meu post" }));
 
     expect(screen.getByText("Meu post")).toBeTruthy();
+    expect(screen.getByText("Publicado em 30/06/2026")).toBeTruthy();
     expect(onEdit).toHaveBeenCalledTimes(1);
     expect(onDelete).toHaveBeenCalledTimes(1);
   });

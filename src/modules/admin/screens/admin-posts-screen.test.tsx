@@ -8,7 +8,10 @@ import { useDeletePost } from "../hooks/use-delete-post";
 import { AdminPostsScreen } from "./admin-posts-screen";
 
 jest.mock("expo-router", () => jest.requireActual("@/test/expo-router-mock").expoRouterMock);
-jest.mock("@/modules/posts", () => ({ usePosts: jest.fn() }));
+jest.mock("@/modules/posts", () => ({
+  ...jest.requireActual("@/modules/posts"),
+  usePosts: jest.fn(),
+}));
 jest.mock("../hooks/use-delete-post");
 
 const remove = jest.fn();
