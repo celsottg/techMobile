@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 
 import { Spacing, useTheme } from "@/shared/theme";
-import { Button } from "@/shared/ui/button";
+import { ListHeader } from "@/shared/ui/list-header";
 import { EmptyState, ErrorState, Loading } from "@/shared/ui/state-views";
 
 import { AlunoRow } from "../components/aluno-row";
@@ -13,8 +13,17 @@ import { useDeleteAluno } from "../hooks/use-delete-aluno";
 export function AdminAlunosScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const { alunos, status, error, isRefreshing, isLoadingMore, retry, refresh, loadMore } =
-    useAlunos();
+  const {
+    alunos,
+    total,
+    status,
+    error,
+    isRefreshing,
+    isLoadingMore,
+    retry,
+    refresh,
+    loadMore,
+  } = useAlunos();
   const { deletingId, remove } = useDeleteAluno();
 
   function renderBody() {
@@ -50,7 +59,11 @@ export function AdminAlunosScreen() {
         refreshing={isRefreshing}
         onRefresh={refresh}
         ListEmptyComponent={
-          <EmptyState title="Nenhum aluno cadastrado" message="Toque em Novo aluno para cadastrar o primeiro." />
+          <EmptyState
+            title="Nenhum aluno cadastrado"
+            message="Toque em Novo aluno para cadastrar o primeiro."
+            icon={{ ios: "graduationcap", android: "school", web: "school" }}
+          />
         }
         ListFooterComponent={
           isLoadingMore ? <ActivityIndicator style={styles.footer} color={theme.primary} /> : undefined
@@ -62,7 +75,12 @@ export function AdminAlunosScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.actions}>
-        <Button title="Novo aluno" onPress={() => router.push("/admin/alunos/create")} />
+        <ListHeader
+          total={status === "success" ? total : undefined}
+          singular="aluno"
+          plural="alunos"
+          action={{ title: "Novo aluno", onPress: () => router.push("/admin/alunos/create") }}
+        />
       </View>
       {renderBody()}
     </View>

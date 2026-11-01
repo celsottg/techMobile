@@ -38,4 +38,13 @@ describe("Button", () => {
 
     expect(screen.getByRole("button", { name: "Voltar" })).toBeEnabled();
   });
+
+  it("renderiza a variante de perigo no tamanho compacto", async () => {
+    const onPress = jest.fn();
+    await render(<Button title="Excluir" variant="danger" size="compact" onPress={onPress} />);
+
+    await fireEvent.press(screen.getByRole("button", { name: "Excluir" }));
+
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
 });

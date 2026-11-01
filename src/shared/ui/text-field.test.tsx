@@ -22,6 +22,18 @@ describe("TextField", () => {
     expect(screen.getByText("Informe o título.")).toBeTruthy();
   });
 
+  it("repassa foco e perda de foco ao chamador", async () => {
+    const onFocus = jest.fn();
+    const onBlur = jest.fn();
+    await render(<TextField label="Título" value="" onFocus={onFocus} onBlur={onBlur} />);
+
+    await fireEvent(screen.getByLabelText("Título"), "focus");
+    await fireEvent(screen.getByLabelText("Título"), "blur");
+
+    expect(onFocus).toHaveBeenCalledTimes(1);
+    expect(onBlur).toHaveBeenCalledTimes(1);
+  });
+
   it("não mostra erro quando não há", async () => {
     await render(<TextField label="Título" value="" />);
 

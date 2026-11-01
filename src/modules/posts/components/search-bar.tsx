@@ -1,6 +1,7 @@
-import { StyleSheet, TextInput } from "react-native";
+import { SymbolView } from "expo-symbols";
+import { StyleSheet, TextInput, View } from "react-native";
 
-import { Spacing, useTheme } from "@/shared/theme";
+import { Radius, Shadow, Spacing, Typography, useTheme } from "@/shared/theme";
 
 type SearchBarProps = {
   value: string;
@@ -11,29 +12,45 @@ export function SearchBar({ value, onChangeText }: SearchBarProps) {
   const theme = useTheme();
 
   return (
-    <TextInput
-      value={value}
-      onChangeText={onChangeText}
-      placeholder="Buscar por título ou conteúdo"
-      placeholderTextColor={theme.textSecondary}
-      autoCapitalize="none"
-      autoCorrect={false}
-      clearButtonMode="while-editing"
-      returnKeyType="search"
+    <View
       style={[
-        styles.input,
-        { backgroundColor: theme.card, borderColor: theme.border, color: theme.text },
+        styles.container,
+        Shadow.card,
+        { backgroundColor: theme.card, borderColor: theme.border },
       ]}
-    />
+    >
+      <SymbolView
+        name={{ ios: "magnifyingglass", android: "search", web: "search" }}
+        tintColor={theme.textSecondary}
+        size={18}
+      />
+      <TextInput
+        value={value}
+        onChangeText={onChangeText}
+        placeholder="Buscar por título ou conteúdo"
+        placeholderTextColor={theme.textSecondary}
+        autoCapitalize="none"
+        autoCorrect={false}
+        clearButtonMode="while-editing"
+        returnKeyType="search"
+        style={[styles.input, { color: theme.text }]}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  input: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 10,
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.two,
     paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two + 2,
-    fontSize: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: Radius.pill,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: Spacing.two + 4,
+    fontSize: Typography.body.fontSize,
   },
 });

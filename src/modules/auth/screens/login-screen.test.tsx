@@ -6,6 +6,11 @@ import { professorSession } from "@/test/fixtures";
 import { login } from "../services/auth.api";
 import { LoginScreen } from "./login-screen";
 
+// Função comum (não jest.fn), para o resetAllMocks do beforeEach não apagar os insets.
+jest.mock("react-native-safe-area-context", () => ({
+  ...jest.requireActual("react-native-safe-area-context"),
+  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+}));
 jest.mock("../services/auth.api");
 jest.mock("@/shared/session");
 
@@ -45,4 +50,16 @@ describe("LoginScreen", () => {
     });
     expect(signIn).toHaveBeenCalledWith(professorSession);
   });
+});
+
+it("mostra a identidade do blog e o erro geral do formulário", async () => {
+  jest.mocked(login).mockRejectedValue(new Error("boom"));
+  await render(<LoginScreen />);
+
+  await fireEvent.changeText(screen.getByLabelText("E-mail"), "carlos.mendes@professor.fiap.br");
+  await fireEvent.changeText(screen.getByLabelText("Senha"), "senha-professor-123");
+  await fireEvent.press(screen.getByRole("button", { name: "Entrar" }));
+
+  expect(screen.getByText("Blog educacional · Pós Tech FIAP")).toBeTruthy();
+  expect(screen.getByRole("alert")).toBeTruthy();
 });

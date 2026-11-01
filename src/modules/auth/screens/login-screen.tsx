@@ -1,49 +1,70 @@
+import { SymbolView } from "expo-symbols";
 import { useRef } from "react";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Spacing, useTheme } from "@/shared/theme";
+import { Radius, Shadow, Spacing, Typography, useTheme } from "@/shared/theme";
 import { Button } from "@/shared/ui/button";
+import { FormError } from "@/shared/ui/form-error";
 import { TextField, type TextFieldRef } from "@/shared/ui/text-field";
 
 import { useLogin } from "../hooks/use-login";
 
 export function LoginScreen() {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const senhaRef = useRef<TextFieldRef>(null);
   const { email, senha, fieldErrors, formError, isSubmitting, changeField, submit } = useLogin();
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+    <KeyboardAvoidingView
+      style={[styles.flex, { backgroundColor: theme.background }]}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.four }]}
+        keyboardShouldPersistTaps="handled"
       >
-        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-          <View style={styles.header}>
-            <Text style={[styles.title, { color: theme.text }]}>TechMobile</Text>
-            <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-              Entre com seu e-mail e senha para acessar os posts.
-            </Text>
+        {/* Topo institucional: marca do blog sobre o azul escuro. */}
+        <View
+          style={[
+            styles.hero,
+            {
+              backgroundColor: theme.primaryDark,
+              paddingTop: insets.top + Spacing.five,
+            },
+          ]}
+        >
+          <View style={[styles.logo, { backgroundColor: theme.accent }]}>
+            <SymbolView
+              name={{
+                ios: "graduationcap.fill",
+                android: "school",
+                web: "school",
+              }}
+              tintColor={theme.onPrimary}
+              size={32}
+            />
           </View>
+          <Text style={[Typography.display, { color: theme.onPrimary }]} accessibilityRole="header">
+            TechMobile
+          </Text>
+          <Text style={[Typography.body, { color: theme.primarySoft }]}>
+            Blog educacional · Pós Tech FIAP
+          </Text>
+        </View>
 
-          {formError && (
-            <View
-              style={[styles.formError, { borderColor: theme.danger }]}
-              accessibilityRole="alert"
-            >
-              <Text style={{ color: theme.danger }}>{formError}</Text>
+        <View style={styles.cardWrapper}>
+          <View style={[styles.card, Shadow.card, { backgroundColor: theme.card }]}>
+            <View style={styles.cardHeader}>
+              <Text style={[Typography.heading, { color: theme.text }]}>Acesse sua conta</Text>
+              <Text style={[Typography.caption, { color: theme.textSecondary }]}>
+                Entre com seu e-mail institucional e senha.
+              </Text>
             </View>
-          )}
 
-          <View style={styles.form}>
+            <FormError message={formError} />
+
             <TextField
               label="E-mail"
               value={email}
@@ -80,42 +101,56 @@ export function LoginScreen() {
               loading={isSubmitting}
             />
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        </View>
+
+        <Text style={[Typography.caption, styles.footer, { color: theme.textSecondary }]}>
+          Acesso para professores e alunos
+        </Text>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
   flex: {
     flex: 1,
   },
   content: {
     flexGrow: 1,
-    justifyContent: "center",
-    gap: Spacing.four,
-    padding: Spacing.four,
   },
-  header: {
+  hero: {
+    alignItems: "center",
     gap: Spacing.two,
+    paddingHorizontal: Spacing.four,
+    // Espaço extra embaixo para o cartão do formulário sobrepor o topo.
+    paddingBottom: Spacing.five * 2,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: "700",
+  logo: {
+    width: 64,
+    height: 64,
+    borderRadius: Radius.pill,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: Spacing.two,
   },
-  subtitle: {
-    fontSize: 16,
-    lineHeight: 22,
+  cardWrapper: {
+    alignItems: "center",
+    marginTop: -Spacing.five * 1.5,
+    paddingHorizontal: Spacing.three,
   },
-  formError: {
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: Spacing.three,
-  },
-  form: {
+  card: {
+    // Em telas largas (web/tablet), o formulário fica centralizado e não estica.
+    width: "100%",
+    maxWidth: 480,
+    padding: Spacing.four,
     gap: Spacing.three,
+    borderRadius: Radius.lg,
+  },
+  cardHeader: {
+    gap: Spacing.one,
+  },
+  footer: {
+    textAlign: "center",
+    marginTop: Spacing.four,
   },
 });

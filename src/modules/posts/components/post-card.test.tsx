@@ -11,13 +11,15 @@ describe("PostCard", () => {
     expect(screen.getByText("Primeiro post")).toBeTruthy();
     expect(screen.getByText("Conteúdo do primeiro post")).toBeTruthy();
     expect(screen.getByText("Publicado em 30/06/2026")).toBeTruthy();
+    expect(screen.queryByText("Atualizado")).toBeNull();
   });
 
-  it("mostra a data de atualização só quando o post foi editado", async () => {
+  it("mostra a etiqueta de atualizado só quando o post foi editado", async () => {
     const post = makePost({ data_atualizacao: "2026-07-02T12:00:00.000Z" });
     await render(<PostCard post={post} onPress={jest.fn()} />);
 
-    expect(screen.getByText("Publicado em 30/06/2026 · Atualizado em 02/07/2026")).toBeTruthy();
+    expect(screen.getByText("Publicado em 30/06/2026")).toBeTruthy();
+    expect(screen.getByText("Atualizado")).toBeTruthy();
   });
 
   it("chama onPress ao tocar no card", async () => {

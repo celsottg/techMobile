@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
-import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 
-import { Spacing, useTheme } from "@/shared/theme";
+import { Spacing, Typography, useTheme } from "@/shared/theme";
 import { EmptyState, ErrorState, Loading } from "@/shared/ui/state-views";
 
 import { PostCard } from "../components/post-card";
@@ -13,6 +13,7 @@ export function PostListScreen() {
   const router = useRouter();
   const {
     posts,
+    total,
     status,
     error,
     search,
@@ -24,6 +25,13 @@ export function PostListScreen() {
     refresh,
     loadMore,
   } = usePosts();
+
+  // Resumo acima da lista: total publicado ou quantos posts a busca encontrou.
+  const found = posts.length === 1 ? "post encontrado" : "posts encontrados";
+  const published = total === 1 ? "post publicado" : "posts publicados";
+  const summary = term
+    ? `${posts.length} ${found} para "${term}"`
+    : `${total} ${published} pelos professores`;
 
   function renderBody() {
     if (status === "loading") {
@@ -49,15 +57,35 @@ export function PostListScreen() {
         contentContainerStyle={styles.list}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         keyboardShouldPersistTaps="handled"
+        ListHeaderComponent={
+          posts.length > 0 ? (
+            <View style={styles.sectionHeader}>
+              <Text style={[Typography.overline, { color: theme.accentDark }]}>
+                {term ? "Resultados da busca" : "Publicações recentes"}
+              </Text>
+              <Text style={[Typography.caption, { color: theme.textSecondary }]}>
+                {summary}
+              </Text>
+            </View>
+          ) : undefined
+        }
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
         refreshing={isRefreshing}
         onRefresh={refresh}
         ListEmptyComponent={
           term ? (
-            <EmptyState title="Nenhum resultado" message={`Nenhum post encontrado para "${term}".`} />
+            <EmptyState
+              title="Nenhum resultado"
+              message={`Nenhum post encontrado para "${term}".`}
+              icon={{ ios: "magnifyingglass", android: "search_off", web: "search_off" }}
+            />
           ) : (
-            <EmptyState title="Nenhum post publicado" message="Ainda não há posts por aqui." />
+            <EmptyState
+              title="Nenhum post publicado"
+              message="Ainda não há posts por aqui."
+              icon={{ ios: "book", android: "menu_book", web: "menu_book" }}
+            />
           )
         }
         ListFooterComponent={
@@ -85,6 +113,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingTop: Spacing.three,
     paddingBottom: Spacing.two,
+  },
+  sectionHeader: {
+    gap: Spacing.one,
+    marginBottom: Spacing.three,
   },
   list: {
     flexGrow: 1,

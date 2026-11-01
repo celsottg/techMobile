@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Visão geral
 
-Aplicativo mobile Expo (SDK 58) / React Native 0.88 / React 19 com Expo Router, escrito em TypeScript (`strict`). É um projeto da FIAP (Tech Challenge) em estágio inicial: a área logada tem duas abas. A aba **Posts** tem a Home (`/`, em `src/app/(app)/(posts)/index.tsx`) com a listagem de `src/modules/posts`, e cada card abre a leitura do post em `/posts/[id]`. A aba **Admin** (`/admin`, só PROFESSOR) é o hub de cadastros do professor, do módulo `src/modules/admin`; tem as seções Posts, Professores e Alunos (listagem paginada em `/admin/alunos`, `GET /alunos`; lápis abre `/admin/alunos/[id]/edit`, `PUT`, e lixeira exclui com confirmação, `DELETE`; cadastro em `/admin/alunos/create`, `POST /alunos`); a de Professores tem a listagem paginada em `/admin/professores` (`GET /professores`; lápis abre `/admin/professores/[id]/edit`, `PUT`, e lixeira exclui com confirmação, `DELETE`) e o cadastro em `/admin/professores/create` (`POST /professores`). Na edição de professor ou aluno a senha é opcional (em branco mantém a atual). Posts tem a gestão de posts em `/admin/posts` (lápis abre `/admin/posts/[id]/edit`, lixeira exclui com confirmação) e a criação em `/admin/posts/create`. O código do template original foi movido para `example/` (não faz parte do build).
+Aplicativo mobile Expo (SDK 58) / React Native 0.88 / React 19 com Expo Router, escrito em TypeScript (`strict`). É um projeto da FIAP (Tech Challenge) em estágio inicial: a área logada tem duas abas. A aba **Blog** (grupo `(posts)`) tem a Home (`/`, em `src/app/(app)/(posts)/index.tsx`) com a listagem de `src/modules/posts`, e cada card abre a leitura do post em `/posts/[id]`. A aba **Gestão** (rota `/admin`, só PROFESSOR) é o hub de cadastros do professor, do módulo `src/modules/admin`; tem as seções Posts, Professores e Alunos (listagem paginada em `/admin/alunos`, `GET /alunos`; lápis abre `/admin/alunos/[id]/edit`, `PUT`, e lixeira exclui com confirmação, `DELETE`; cadastro em `/admin/alunos/create`, `POST /alunos`); a de Professores tem a listagem paginada em `/admin/professores` (`GET /professores`; lápis abre `/admin/professores/[id]/edit`, `PUT`, e lixeira exclui com confirmação, `DELETE`) e o cadastro em `/admin/professores/create` (`POST /professores`). Na edição de professor ou aluno a senha é opcional (em branco mantém a atual). Posts tem a gestão de posts em `/admin/posts` (lápis abre `/admin/posts/[id]/edit`, lixeira exclui com confirmação) e a criação em `/admin/posts/create`. O código do template original foi movido para `example/` (não faz parte do build).
 
 `AGENTS.md` tem regras obrigatórias para este repositório. Em especial: as APIs do Expo mudam a cada SDK, então consulte `https://docs.expo.dev/versions/v58.0.0/` (ou `https://docs.expo.dev/llms.txt`) antes de usar qualquer API de Expo/EAS/React Native, em vez de confiar na memória.
 
@@ -37,7 +37,7 @@ npx expo-doctor             # diagnóstico de dependências/config
 
 ### Arquitetura modular (em implementação)
 
-A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já existem `modules/auth` (login e `SignOutButton`), `modules/posts` (listagem, detalhe e `createPost`/`updatePost`/`deletePost`), `modules/admin` (hub, criação, edição e exclusão de posts) e uma base de `shared/` (config, api, session, theme, ui). Ao criar telas ou lógica, siga essa estrutura:
+A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já existem `modules/auth` (login e `SignOutButton`), `modules/posts` (listagem, detalhe e `createPost`/`updatePost`/`deletePost`), `modules/admin` (hub, criação, edição e exclusão de posts) e uma base de `shared/` (config, api, session, theme, ui e utils, com `firstName`/`initials` que ignoram títulos como "Dr." no nome). Ao criar telas ou lógica, siga essa estrutura:
 
 - `src/modules/auth` (login via `POST /login`), `src/modules/posts` (leitura de posts, ALUNO e PROFESSOR) e `src/modules/admin` (criar, editar e remover posts, só PROFESSOR).
 - `src/shared/` para infraestrutura transversal sem regra de negócio: cliente HTTP, sessão (token, role, usuario), UI genérica, tema e config.
@@ -50,23 +50,37 @@ A organização prevista para `src/` está em `docs/arquitetura-modular.md`. Já
 
 ## Cores (obrigatório)
 
-A paleta do app é fixa e vive em `src/shared/theme/index.ts`. Toda tela nova ou alterada deve segui-la:
+A identidade visual é de blog institucional (azul-marinho + dourado) e vive em `src/shared/theme/index.ts`. Toda tela nova ou alterada deve segui-la:
 
 | Uso | Token | Cor |
 | --- | --- | --- |
-| Fundo da tela | `background` | `#F4F7F5` |
-| Cartões e campo de busca (também campos de formulário e cabeçalhos) | `card` | `#FFFFFF` |
-| Títulos e texto principal | `text` | `#24332F` |
-| Texto secundário (metadados, placeholders) | `textSecondary` | `#687671` |
-| Bordas | `border` | `#E1E9E4` |
-| Botões, links e destaques (ex.: post selecionado/pressionado) | `primary` | `#34786B` |
-| Destaque discreto, como etiquetas | `primarySoft` | `#E8F2EE` |
+| Botões, links, cabeçalhos dos Stacks, aba ativa, post pressionado | `primary` | `#1E3A5F` |
+| Topo do login e botão pressionado | `primaryDark` | `#152A45` |
+| Texto e ícones sobre `primary`/`primaryDark` | `onPrimary` | `#FFFFFF` |
+| Etiquetas, fundo de ícones e avatares | `primarySoft` | `#E6EDF5` |
+| Destaque dourado (faixa do card de post, logo do login) | `accent` | `#C9932E` |
+| Fundo de etiquetas douradas | `accentSoft` | `#FAF1E1` |
+| Texto sobre `accentSoft` (o `accent` puro não tem contraste) | `accentDark` | `#8A5A12` |
+| Fundo da tela | `background` | `#F5F6F8` |
+| Cartões, campos de formulário e busca | `card` | `#FFFFFF` |
+| Títulos e texto principal | `text` | `#1B2430` |
+| Texto secundário (metadados, placeholders) | `textSecondary` | `#5B6675` |
+| Bordas e divisores | `border` | `#DDE2E8` |
+| Erros e exclusão | `danger` | `#C2362F` |
+| Fundo de caixas de erro e do botão de excluir | `dangerSoft` | `#FBECEB` |
+| Sombra dos cartões (usada por `Shadow.card`) | `shadow` | `rgba(16, 32, 56, 0.08)` |
+
+Os pares de texto e fundo passam no contraste WCAG AA (mínimo de 4,5:1).
 
 Regras:
-- Use sempre os tokens via `useTheme()`; **nunca** escreva hex direto em componentes ou telas. Se faltar uma cor, adicione um token no tema (como já existem `onPrimary` e `danger`) em vez de criar um valor local.
+- Use sempre os tokens via `useTheme()`; **nunca** escreva hex direto em componentes ou telas. Se faltar uma cor, adicione um token no tema em vez de criar um valor local.
+- **Tipografia:** fonte do sistema, com a escala `Typography` (`display`, `title`, `heading`, `body`, `bodyStrong`, `reading`, `label`, `caption`, `captionStrong`, `overline`). Não escreva `fontSize`/`fontWeight`/`lineHeight` soltos: use um estilo da escala ou crie um novo nela.
+- **Raios e sombra:** use `Radius` (`sm`, `md`, `lg`, `pill`) e `Shadow.card` (`boxShadow`, que funciona em iOS, Android e web na New Architecture).
+- **Componentes de `shared/ui`:** prefira `Button` (variantes `primary`/`secondary`/`danger`, tamanho `compact`), `IconButton`, `Avatar`, `Badge`, `FormError`, `ListHeader`, `EmptyState` (com `icon`) e `stackHeaderOptions` (cabeçalho azul dos Stacks) a reestilizar na tela.
 - Não altere os valores da tabela acima sem pedido explícito do usuário.
 - O app é só modo claro (`userInterfaceStyle: "light"` em `app.json`); não reintroduza dark mode sem pedido.
-- Cabeçalhos e fundo do Expo Router usam a mesma paleta via `NavigationTheme` no `ThemeProvider` de `src/app/_layout.tsx`.
+- Cabeçalhos e fundo do Expo Router usam a mesma paleta via `NavigationTheme` no `ThemeProvider` de `src/app/_layout.tsx`. Os Stacks das abas usam `stackHeaderOptions` (barra azul), e a `StatusBar` é `light` no layout raiz.
+- As abas aparecem como **Blog** (grupo `(posts)`) e **Gestão** (rota `admin`); os nomes de rota e as URLs não mudaram.
 
 ## Backend local
 

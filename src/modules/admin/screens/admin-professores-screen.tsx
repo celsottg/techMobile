@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 
 import { Spacing, useTheme } from "@/shared/theme";
-import { Button } from "@/shared/ui/button";
+import { ListHeader } from "@/shared/ui/list-header";
 import { EmptyState, ErrorState, Loading } from "@/shared/ui/state-views";
 
 import { ProfessorRow } from "../components/professor-row";
@@ -13,8 +13,17 @@ import { useProfessores } from "../hooks/use-professores";
 export function AdminProfessoresScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const { professores, status, error, isRefreshing, isLoadingMore, retry, refresh, loadMore } =
-    useProfessores();
+  const {
+    professores,
+    total,
+    status,
+    error,
+    isRefreshing,
+    isLoadingMore,
+    retry,
+    refresh,
+    loadMore,
+  } = useProfessores();
   const { deletingId, remove } = useDeleteProfessor();
 
   function renderBody() {
@@ -53,6 +62,7 @@ export function AdminProfessoresScreen() {
           <EmptyState
             title="Nenhum professor cadastrado"
             message="Toque em Novo professor para cadastrar o primeiro."
+            icon={{ ios: "person.2", android: "co_present", web: "co_present" }}
           />
         }
         ListFooterComponent={
@@ -65,7 +75,15 @@ export function AdminProfessoresScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.actions}>
-        <Button title="Novo professor" onPress={() => router.push("/admin/professores/create")} />
+        <ListHeader
+          total={status === "success" ? total : undefined}
+          singular="professor"
+          plural="professores"
+          action={{
+            title: "Novo professor",
+            onPress: () => router.push("/admin/professores/create"),
+          }}
+        />
       </View>
       {renderBody()}
     </View>

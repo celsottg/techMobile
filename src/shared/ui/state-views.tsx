@@ -1,8 +1,10 @@
+import { SymbolView } from "expo-symbols";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
-import { Spacing, useTheme } from "@/shared/theme";
+import { Radius, Spacing, Typography, useTheme } from "@/shared/theme";
 
 import { Button } from "./button";
+import type { IconName } from "./icon-button";
 
 export function Loading({ message = "Carregando..." }: { message?: string }) {
   const theme = useTheme();
@@ -25,7 +27,14 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { color: theme.danger }]}>Algo deu errado</Text>
+      <View style={[styles.iconCircle, { backgroundColor: theme.dangerSoft }]}>
+        <SymbolView
+          name={{ ios: "exclamationmark.triangle", android: "warning", web: "warning" }}
+          tintColor={theme.danger}
+          size={28}
+        />
+      </View>
+      <Text style={[styles.title, { color: theme.text }]}>Algo deu errado</Text>
       <Text style={[styles.message, { color: theme.textSecondary }]}>{message}</Text>
       {onRetry && (
         <View style={styles.action}>
@@ -39,13 +48,19 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
 type EmptyStateProps = {
   title: string;
   message?: string;
+  icon?: IconName;
 };
 
-export function EmptyState({ title, message }: EmptyStateProps) {
+const DEFAULT_EMPTY_ICON: IconName = { ios: "tray", android: "inbox", web: "inbox" };
+
+export function EmptyState({ title, message, icon = DEFAULT_EMPTY_ICON }: EmptyStateProps) {
   const theme = useTheme();
 
   return (
     <View style={styles.container}>
+      <View style={[styles.iconCircle, { backgroundColor: theme.primarySoft }]}>
+        <SymbolView name={icon} tintColor={theme.primary} size={28} />
+      </View>
       <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
       {message && (
         <Text style={[styles.message, { color: theme.textSecondary }]}>{message}</Text>
@@ -62,13 +77,20 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
     padding: Spacing.four,
   },
+  iconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: Radius.pill,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: Spacing.two,
+  },
   title: {
-    fontSize: 18,
-    fontWeight: "600",
+    ...Typography.heading,
     textAlign: "center",
   },
   message: {
-    fontSize: 15,
+    ...Typography.body,
     textAlign: "center",
   },
   action: {

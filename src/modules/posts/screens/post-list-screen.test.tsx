@@ -52,7 +52,10 @@ describe("PostListScreen", () => {
   });
 
   it("lista os posts e abre o detalhe ao tocar no card", async () => {
-    mockPosts({ posts: [makePost({ id: 4, titulo: "Quarto post" })], total: 1 });
+    mockPosts({
+      posts: [makePost({ id: 4, titulo: "Quarto post" })],
+      total: 1,
+    });
     await render(<PostListScreen />);
 
     await fireEvent.press(screen.getByRole("button", { name: "Quarto post" }));
@@ -88,5 +91,28 @@ describe("PostListScreen", () => {
     );
 
     expect(setSearch).toHaveBeenCalledWith("react");
+  });
+});
+
+describe("PostListScreen cabeçalho", () => {
+  it("mostra o total de posts publicados", async () => {
+    mockPosts({ posts: [makePost()], total: 12 });
+    await render(<PostListScreen />);
+
+    expect(screen.getByText("Publicações recentes")).toBeTruthy();
+    expect(screen.getByText("12 posts publicados pelos professores")).toBeTruthy();
+  });
+
+  it("mostra quantos posts a busca encontrou", async () => {
+    mockPosts({
+      posts: [makePost()],
+      search: "react",
+      term: "react",
+      total: 12,
+    });
+    await render(<PostListScreen />);
+
+    expect(screen.getByText("Resultados da busca")).toBeTruthy();
+    expect(screen.getByText('1 post encontrado para "react"')).toBeTruthy();
   });
 });

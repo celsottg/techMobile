@@ -1,16 +1,20 @@
 import { Stack } from "expo-router";
 
 import { SignOutButton } from "@/modules/auth";
+import { useTheme } from "@/shared/theme";
+import { stackHeaderOptions } from "@/shared/ui/stack-header";
 
-// Aba Admin: área do professor. Cada cadastro é uma seção em admin/<secao>/.
+// Aba Gestão (rota admin): área do professor. Cada cadastro é uma seção em admin/<secao>/.
 export default function AdminLayout() {
+  const theme = useTheme();
+
   return (
-    <Stack>
+    <Stack screenOptions={stackHeaderOptions(theme)}>
       <Stack.Screen
         name="index"
-        options={{ title: "Admin", headerRight: () => <SignOutButton /> }}
+        options={{ title: "Gestão", headerRight: () => <SignOutButton /> }}
       />
-      <Stack.Screen name="posts/index" options={{ title: "Posts", headerBackTitle: "Admin" }} />
+      <Stack.Screen name="posts/index" options={{ title: "Posts", headerBackTitle: "Gestão" }} />
       <Stack.Screen
         name="posts/create"
         options={{ title: "Novo post", headerBackTitle: "Posts" }}
@@ -21,7 +25,7 @@ export default function AdminLayout() {
       />
       <Stack.Screen
         name="professores/index"
-        options={{ title: "Professores", headerBackTitle: "Admin" }}
+        options={{ title: "Professores", headerBackTitle: "Gestão" }}
       />
       <Stack.Screen
         name="professores/create"
@@ -31,7 +35,7 @@ export default function AdminLayout() {
         name="professores/[id]/edit"
         options={{ title: "Editar professor", headerBackTitle: "Professores" }}
       />
-      <Stack.Screen name="alunos/index" options={{ title: "Alunos", headerBackTitle: "Admin" }} />
+      <Stack.Screen name="alunos/index" options={{ title: "Alunos", headerBackTitle: "Gestão" }} />
       <Stack.Screen
         name="alunos/create"
         options={{ title: "Novo aluno", headerBackTitle: "Alunos" }}

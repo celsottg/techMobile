@@ -12,18 +12,19 @@ Aplicativo mobile do blog educacional do **Tech Challenge (Pós Tech FIAP)**, de
 | Listagem paginada de posts (rolagem infinita e pull-to-refresh) | ✅ |
 | Busca de posts por palavra-chave (com debounce) | ✅ |
 | Leitura do post completo ao tocar no card (`GET /posts/:id`), com tratamento de post não encontrado | ✅ |
-| Aba **Admin** só para professor, com hub de cadastros (`Tabs.Protected`) | ✅ |
+| Aba **Gestão** (rota `/admin`) só para professor, com hub de cadastros (`Tabs.Protected`) | ✅ |
+| Visual de blog institucional: paleta azul e dourado, escala tipográfica e componentes padronizados | ✅ |
 | Criação de posts (só professor, `POST /posts`) | ✅ |
-| Edição de posts pelo lápis na aba Admin, com os campos já preenchidos (só professor, `PUT /posts/:id`) | ✅ |
+| Edição de posts pelo lápis na aba Gestão, com os campos já preenchidos (só professor, `PUT /posts/:id`) | ✅ |
 | Exclusão de posts pela lixeira, com confirmação (só professor, `DELETE /posts/:id`) | ✅ |
-| Listagem paginada de professores na aba Admin, com rolagem infinita e pull-to-refresh (só professor, `GET /professores`) | ✅ |
-| Cadastro de novos professores na aba Admin (só professor, `POST /professores`) | ✅ |
+| Listagem paginada de professores na aba Gestão, com rolagem infinita e pull-to-refresh (só professor, `GET /professores`) | ✅ |
+| Cadastro de novos professores na aba Gestão (só professor, `POST /professores`) | ✅ |
 | Edição de professores pelo lápis, com os campos preenchidos e senha opcional (só professor, `PUT /professores/:id`) | ✅ |
 | Exclusão de professores pela lixeira, com confirmação (só professor, `DELETE /professores/:id`) | ✅ |
-| Listagem paginada de alunos na aba Admin, com rolagem infinita e pull-to-refresh (só professor, `GET /alunos`) | ✅ |
+| Listagem paginada de alunos na aba Gestão, com rolagem infinita e pull-to-refresh (só professor, `GET /alunos`) | ✅ |
 | Edição de alunos pelo lápis, com os campos preenchidos e senha opcional (só professor, `PUT /alunos/:id`) | ✅ |
 | Exclusão de alunos pela lixeira, com confirmação (só professor, `DELETE /alunos/:id`) | ✅ |
-| Cadastro de novos alunos na aba Admin (só professor, `POST /alunos`) | ✅ |
+| Cadastro de novos alunos na aba Gestão (só professor, `POST /alunos`) | ✅ |
 
 ## Stack
 
@@ -58,14 +59,14 @@ src/
 │   ├── (auth)/
 │   │   └── login.tsx             # → modules/auth
 │   └── (app)/                    # Área autenticada
-│       ├── _layout.tsx           # Abas: Posts (todos) e Admin (Tabs.Protected, só PROFESSOR)
-│       ├── (posts)/              # Aba Posts (o grupo não aparece na URL)
-│       │   ├── _layout.tsx       # Stack com header "Posts" (botão "Sair") e "Post"
+│       ├── _layout.tsx           # Abas: Blog (todos) e Gestão (Tabs.Protected, só PROFESSOR)
+│       ├── (posts)/              # Aba Blog (o grupo não aparece na URL)
+│       │   ├── _layout.tsx       # Stack com header azul "Blog" (botão "Sair") e "Post"
 │       │   ├── index.tsx         # Home "/" → modules/posts (lista)
 │       │   └── posts/
 │       │       └── [id].tsx      # "/posts/:id" → modules/posts (detalhe)
-│       └── admin/                # Aba Admin (área do professor)
-│           ├── _layout.tsx       # Stack com header "Admin" (botão "Sair"), "Posts", "Novo post", "Editar post", "Professores", "Novo professor", "Editar professor", "Alunos", "Novo aluno" e "Editar aluno"
+│       └── admin/                # Aba Gestão (área do professor)
+│           ├── _layout.tsx       # Stack com header azul "Gestão" (botão "Sair"), "Posts", "Novo post", "Editar post", "Professores", "Novo professor", "Editar professor", "Alunos", "Novo aluno" e "Editar aluno"
 │           ├── index.tsx         # "/admin" → modules/admin (hub de cadastros)
 │           ├── posts/
 │           │   ├── index.tsx     # "/admin/posts" → modules/admin (gestão de posts)
@@ -82,7 +83,7 @@ src/
 │
 ├── modules/
 │   ├── admin/                    # Área do professor (consome modules/posts)
-│   │   ├── components/           # PostForm (título/conteúdo, criação e edição), AdminPostRow (lápis e lixeira), UsuarioForm (nome, email e senha; usado por professores e alunos), ProfessorRow e AlunoRow (nome, email, lápis e lixeira)
+│   │   ├── components/           # PostForm (título/conteúdo, criação e edição), AdminPostRow (lápis e lixeira), UsuarioForm (nome, email e senha; usado por professores e alunos), ProfessorRow e AlunoRow (avatar, nome, email, etiqueta de papel, lápis e lixeira)
 │   │   ├── hooks/                # use-create-post, use-edit-post (carrega e salva), use-delete-post (confirma e exclui), use-create-professor e use-create-aluno (cadastram), use-edit-professor e use-edit-aluno (carregam e salvam), use-delete-professor e use-delete-aluno (confirmam e excluem), use-professores e use-alunos (listas paginadas)
 │   │   ├── screens/              # AdminHomeScreen (hub), AdminPostsScreen, PostCreateScreen, PostEditScreen, AdminProfessoresScreen, ProfessorCreateScreen, ProfessorEditScreen, AdminAlunosScreen, AlunoCreateScreen, AlunoEditScreen
 │   │   ├── services/             # professores.api.ts (GET, POST, PUT e DELETE /professores), alunos.api.ts (GET, POST, PUT e DELETE /alunos), professores-changes.ts e alunos-changes.ts (sinais de "a lista mudou")
@@ -115,7 +116,8 @@ src/
     ├── config/env.ts             # URL da API
     ├── session/                  # SessionProvider, useSession, persistência da sessão
     ├── theme/                    # Paleta, tema do React Navigation, espaçamentos, useTheme
-    └── ui/                       # Button, TextField, Loading, ErrorState, EmptyState
+    ├── utils/person-name.ts      # Primeiro nome e iniciais, sem títulos como "Dr." ou "Profa."
+    └── ui/                       # Button, IconButton, TextField, Avatar, Badge, FormError, ListHeader, Loading, ErrorState, EmptyState, stackHeaderOptions
 ```
 
 ### Regras de dependência
@@ -144,12 +146,12 @@ LoginScreen ──► POST /login { email, senha }
                                │
                                ▼
                  Stack.Protected libera (app) → Home (listagem de posts)
-                 Tabs.Protected mostra a aba Admin só se role === "PROFESSOR"
+                 Tabs.Protected mostra a aba Gestão só se role === "PROFESSOR"
                  Requisições seguintes: Authorization: Bearer <token>
                  401 em rota autenticada → sessão encerrada → volta ao login
 ```
 
-O token devolvido pelo backend é **fixo por papel** (não é JWT): todos os logins do mesmo papel recebem o mesmo token. O `role` salvo na sessão é o que controla o acesso à aba Admin. O backend também barra escrita de ALUNO com 403.
+O token devolvido pelo backend é **fixo por papel** (não é JWT): todos os logins do mesmo papel recebem o mesmo token. O `role` salvo na sessão é o que controla o acesso à aba Gestão. O backend também barra escrita de ALUNO com 403.
 
 ### Navegação de leitura
 
@@ -163,7 +165,7 @@ Home "/" (PostListScreen) ── toque no card ──► "/posts/:id" (PostDetai
 
 O detalhe sempre busca o post pelo id (em vez de reaproveitar o item da lista), então também funciona aberto por link direto.
 
-### Área do professor (aba Admin)
+### Área do professor (aba Gestão)
 
 ```
 "/admin" (AdminHomeScreen, hub de cadastros)
@@ -205,7 +207,7 @@ O detalhe sempre busca o post pelo id (em vez de reaproveitar o item da lista), 
                                 └── 201 → fecha o formulário e volta para a lista, já com o novo aluno
 ```
 
-- **Só professor:** a aba Admin fica dentro de `Tabs.Protected`, então ALUNO não a vê nem a abre por link direto.
+- **Só professor:** a aba Gestão fica dentro de `Tabs.Protected`, então ALUNO não a vê nem a abre por link direto.
 - **Novos cadastros:** cada cadastro novo entra como uma seção do hub, em `src/app/(app)/admin/<secao>/`.
 - **Listas atualizadas:** `createPost`, `updatePost` e `deletePost` disparam `notifyPostsChanged()` (`posts-changes.ts`), e toda lista (`usePosts`) e todo detalhe (`usePost`) montados recarregam, sem refetch a cada troca de aba. `createProfessor`, `updateProfessor` e `deleteProfessor` fazem o mesmo com `notifyProfessoresChanged()` para o `useProfessores`, e `createAluno`, `updateAluno` e `deleteAluno` com `notifyAlunosChanged()` para o `useAlunos`.
 
@@ -234,19 +236,62 @@ Para que o merge só seja liberado com o CI verde, ative uma regra de proteção
 
 ## Identidade visual
 
-O app usa uma paleta fixa, só em modo claro (`userInterfaceStyle: "light"`). As cores ficam em `src/shared/theme/index.ts` e as telas as consomem por `useTheme()`, nunca com hex direto. O cabeçalho e o fundo da navegação usam a mesma paleta via `ThemeProvider`.
+O visual é de **blog institucional**: azul-marinho como cor principal, dourado como destaque e fundo neutro, só em modo claro (`userInterfaceStyle: "light"`). Tudo vem de `src/shared/theme/index.ts`. As telas consomem as cores por `useTheme()` e usam os tokens de tipografia, raio e sombra, nunca valores soltos.
+
+### Cores
 
 | Uso | Token | Cor |
 | --- | --- | --- |
-| Fundo da tela | `background` | `#F4F7F5` |
-| Cartões e campo de busca | `card` | `#FFFFFF` |
-| Títulos e texto principal | `text` | `#24332F` |
-| Texto secundário | `textSecondary` | `#687671` |
-| Bordas | `border` | `#E1E9E4` |
-| Botões, links e destaques | `primary` | `#34786B` |
-| Destaque discreto, como etiquetas | `primarySoft` | `#E8F2EE` |
+| Botões, links, cabeçalhos e aba ativa | `primary` | `#1E3A5F` |
+| Topo do login e botão pressionado | `primaryDark` | `#152A45` |
+| Texto sobre o azul | `onPrimary` | `#FFFFFF` |
+| Etiquetas, ícones e avatares | `primarySoft` | `#E6EDF5` |
+| Destaque dourado (faixa dos posts, logo) | `accent` | `#C9932E` |
+| Fundo / texto de etiquetas douradas | `accentSoft` / `accentDark` | `#FAF1E1` / `#8A5A12` |
+| Fundo da tela | `background` | `#F5F6F8` |
+| Cartões e campos | `card` | `#FFFFFF` |
+| Texto principal / secundário | `text` / `textSecondary` | `#1B2430` / `#5B6675` |
+| Bordas | `border` | `#DDE2E8` |
+| Erros e exclusão | `danger` / `dangerSoft` | `#C2362F` / `#FBECEB` |
 
-Tokens de apoio: `onPrimary` (`#FFFFFF`, texto sobre botões) e `danger` (`#DC2626`, erros).
+Os pares de texto e fundo passam no contraste WCAG AA (4,5:1).
+
+### Tipografia, raios e sombra
+
+- **Tipografia:** fonte do sistema (San Francisco no iOS, Roboto no Android), com a escala `Typography`:
+
+  | Estilo | Tamanho / altura | Uso |
+  | --- | --- | --- |
+  | `display` | 28 / 34, negrito | Título do login e saudação da Gestão |
+  | `title` | 22 / 28, negrito | Título do post |
+  | `heading` | 18 / 24, seminegrito | Títulos de cards e seções |
+  | `body` e `bodyStrong` | 16 / 24 | Texto de interface |
+  | `reading` | 17 / 28 | Corpo do post (leitura longa) |
+  | `label` | 14 / 20, seminegrito | Rótulos e botões compactos |
+  | `caption` e `captionStrong` | 13 / 18 | Datas, metadados e abas |
+  | `overline` | 12 / 16, caixa alta | Etiquetas ("POST", "ATUALIZADO") |
+
+- **Raios:** `Radius` (`sm` 8, `md` 12, `lg` 16, `pill`).
+- **Sombra:** `Shadow.card`, com `boxShadow` (iOS, Android e web na New Architecture).
+
+### Componentes visuais (`src/shared/ui`)
+
+| Componente | Uso |
+| --- | --- |
+| `Button` | Variantes `primary`, `secondary` e `danger`; tamanho `compact` |
+| `IconButton` | Lápis e lixeira redondos das listas da Gestão |
+| `Avatar` | Iniciais do nome nas listas de professores e alunos |
+| `Badge` | Etiquetas "PROFESSOR", "ALUNO", "POST" e "ATUALIZADO" |
+| `FormError` | Caixa de erro geral dos formulários (login, posts, professores e alunos) |
+| `ListHeader` | Total de itens + botão "Novo …" no topo das listas da Gestão |
+| `EmptyState` / `ErrorState` / `Loading` | Estados de lista vazia (com ícone), erro e carregamento |
+| `stackHeaderOptions` | Cabeçalho azul dos Stacks das abas |
+
+### Telas
+
+- **Login:** topo azul com o capelo dourado, "TechMobile · Blog educacional · Pós Tech FIAP" e o formulário num cartão sobreposto.
+- **Blog:** busca arredondada com lupa, cabeçalho "Publicações recentes" com o total, e cards com faixa dourada, data, etiqueta "Atualizado" e "Ler post ›". A leitura do post usa a escala `reading` com largura máxima de 720 px.
+- **Gestão:** saudação "Olá, {nome}" e seções com ícone. As listas mostram o total, avatar, etiqueta de papel e botões redondos de editar e excluir. Os formulários ficam num cartão.
 
 ## Como executar
 

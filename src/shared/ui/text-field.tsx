@@ -1,7 +1,7 @@
-import type { ComponentRef, Ref } from "react";
+import { useState, type ComponentRef, type Ref } from "react";
 import { StyleSheet, Text, TextInput, View, type TextInputProps } from "react-native";
 
-import { Spacing, useTheme } from "@/shared/theme";
+import { Radius, Spacing, Typography, useTheme } from "@/shared/theme";
 
 export type TextFieldRef = ComponentRef<typeof TextInput>;
 
@@ -11,27 +11,33 @@ type TextFieldProps = TextInputProps & {
   ref?: Ref<TextFieldRef>;
 };
 
-export function TextField({ label, error, style, ...inputProps }: TextFieldProps) {
+export function TextField({ label, error, style, onFocus, onBlur, ...inputProps }: TextFieldProps) {
   const theme = useTheme();
+  const [isFocused, setIsFocused] = useState(false);
+  const borderColor = error ? theme.danger : isFocused ? theme.primary : theme.border;
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: theme.text }]}>{label}</Text>
+      <Text style={[Typography.label, { color: theme.text }]}>{label}</Text>
       <TextInput
         placeholderTextColor={theme.textSecondary}
         accessibilityLabel={label}
+        onFocus={(event) => {
+          setIsFocused(true);
+          onFocus?.(event);
+        }}
+        onBlur={(event) => {
+          setIsFocused(false);
+          onBlur?.(event);
+        }}
         style={[
           styles.input,
-          {
-            backgroundColor: theme.card,
-            borderColor: error ? theme.danger : theme.border,
-            color: theme.text,
-          },
+          { backgroundColor: theme.card, borderColor, color: theme.text },
           style,
         ]}
         {...inputProps}
       />
-      {error && <Text style={[styles.error, { color: theme.danger }]}>{error}</Text>}
+      {error && <Text style={[Typography.caption, { color: theme.danger }]}>{error}</Text>}
     </View>
   );
 }
@@ -40,18 +46,11 @@ const styles = StyleSheet.create({
   container: {
     gap: Spacing.one + 2,
   },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-  },
   input: {
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: Radius.md,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two + 4,
-    fontSize: 16,
-  },
-  error: {
-    fontSize: 13,
+    fontSize: Typography.body.fontSize,
   },
 });
