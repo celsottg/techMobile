@@ -27,6 +27,13 @@ export type PaginatedProfessores = {
   total: number;
 };
 
+// PUT /alunos/:id (só PROFESSOR). Sem `senha`, o backend mantém a atual.
+export type UpdateAlunoInput = {
+  nome: string;
+  email: string;
+  senha?: string;
+};
+
 // A senha nunca é devolvida pelo backend.
 export type Aluno = {
   id: number;

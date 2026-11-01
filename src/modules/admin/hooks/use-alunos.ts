@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import { ApiError } from "@/shared/api/http-client";
 
+import { getAlunosVersion, subscribeAlunosChanges } from "../services/alunos-changes";
 import { fetchAlunos } from "../services/alunos.api";
 import type { Aluno } from "../types";
 
@@ -16,6 +17,8 @@ function errorMessage(error: unknown) {
 /** Listagem paginada de alunos (GET /alunos, só PROFESSOR), com rolagem infinita. */
 export function useAlunos() {
   const [reloadKey, setReloadKey] = useState(0);
+  // Muda quando um aluno é editado ou excluído, para recarregar a lista atualizada.
+  const version = useSyncExternalStore(subscribeAlunosChanges, getAlunosVersion, getAlunosVersion);
 
   const [alunos, setAlunos] = useState<Aluno[]>([]);
   const [page, setPage] = useState(1);
@@ -61,7 +64,7 @@ export function useAlunos() {
     }
 
     loadFirstPage();
-  }, [reloadKey]);
+  }, [reloadKey, version]);
 
   function retry() {
     setReloadKey((key) => key + 1);
