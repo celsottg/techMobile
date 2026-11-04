@@ -341,3 +341,7 @@ Abra no Expo Go (QR code), em um emulador (`a` para Android, `i` para iOS) ou no
 | `npx expo-doctor` | Diagnóstico de dependências e configuração |
 
 `npm run reset-project` vem do template e está quebrado: o script foi movido para `example/scripts`, junto com o código original do template (a pasta `example/` não faz parte do build).
+
+## Desenvolvimento do Projeto
+
+Durante esta fase do TechChallenge, aproveitei para trazer um pouco mais o uso da IA no desenvolvimento, até por conta do que tenho sentido no dia a dia do meu trabalho, que o caminho está sendo cada vez a aplicação de IA no desenvolvimento, deixando nós mais focados em orientar, propor, acompanhar, e validar o que foi desenvolvido. Com isso, preparei as especificações, e fiz a aplicação de SDD nesse desenvolvimento. Aproveitei e criei travas na branch main do github para que os commits só chegassem nela através de PR, garantindo que eu não ia ter nada mergeado no projeto sem minha autorização/validação. É um tipo de desafio que encontro no dia a dia, e que tentei manter aplicado aqui, pois acredito ser a nova realidade nossa. 
